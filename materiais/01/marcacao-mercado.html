@@ -1,0 +1,2115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Marcação a Mercado vs. Marcação na Curva</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --laranja: #EC7000;
+            --laranja-claro: #ff8c2c;
+            --verde: #A6CF2E;
+            --verde-claro: #bfe84c;
+            --fundo-escuro: #091B1E;
+            --fundo-secundario: #133134;
+            --texto: #FFFFFF;
+            --texto-secundario: #e0e0e0;
+            --alerta: #ff4d4d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Montserrat', 'Arial', sans-serif;
+            background-color: var(--fundo-escuro);
+            color: var(--texto);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Cabeçalho Íon */
+        .ion-header {
+            background-color: var(--fundo-escuro);
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(166, 207, 46, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .ion-title {
+            display: flex;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .ion-title-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--verde);
+            border-radius: 3px;
+            margin-right: 15px;
+            position: relative;
+        }
+        
+        .ion-title-checkbox::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--verde);
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .ion-title-text {
+            font-size: 22px;
+            color: var(--verde);
+            font-weight: 600;
+        }
+        
+        .ion-progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .ion-progress-fill {
+            height: 100%;
+            width: 70%;
+            background: linear-gradient(90deg, var(--verde) 0%, var(--laranja) 100%);
+        }
+
+        /* Layout principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Cards animados */
+        .animated-card {
+            background-color: var(--fundo-secundario);
+            border-radius: 12px;
+            margin: 25px 0;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: card-enter 0.5s forwards;
+        }
+
+        @keyframes card-enter {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .card-header {
+            background: #133134;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+
+        .card-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1));
+        }
+
+        .card-icon {
+            background: rgba(255,255,255,0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 18px;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 20px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .card-content {
+            padding: 25px;
+        }
+
+        /* Elementos visuais */
+        .highlight-box {
+            background: rgba(166, 207, 46, 0.15);
+            border-left: 4px solid var(--verde);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .highlight-icon {
+            background: var(--verde);
+            color: var(--fundo-escuro);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .highlight-text {
+            font-weight: 500;
+        }
+
+        /* Comparativo visual */
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .comparison-box {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .comparison-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .comparison-title i {
+            margin-right: 10px;
+        }
+        
+        .curve-title {
+            color: var(--verde);
+        }
+        
+        .market-title {
+            color: var(--verde);
+        }
+        
+        .comparison-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .comparison-box::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100%;
+            z-index: 0;
+        }
+        
+        .curve-box::after {
+            background: radial-gradient(circle at top right, rgba(166, 207, 46, 0.2), transparent 70%);
+        }
+        
+        .market-box::after {
+            background: radial-gradient(circle at top right, rgba(236, 112, 0, 0.2), transparent 70%);
+        }
+        
+        .feature-list {
+            list-style: none;
+        }
+        
+        .feature-item {
+            margin-bottom: 12px;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .feature-item i {
+            position: absolute;
+            left: 0;
+            top: 4px;
+        }
+        
+        .curve-item i {
+            color: var(--verde);
+        }
+        
+        .market-item i {
+            color: var(--verde);
+        }
+
+        /* Simulação interativa */
+        .simulator {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .simulator {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .control-panel {
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .slider-container {
+            margin-bottom: 20px;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .slider-value {
+            font-weight: 700;
+        }
+        
+        .slider-value.negative {
+            color: var(--alerta);
+        }
+        
+        .slider-value.positive {
+            color: var(--verde);
+        }
+        
+        .slider-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            position: relative;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: transparent;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--laranja);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        
+        .slider-marks {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 12px;
+            color: var(--texto-secundario);
+        }
+
+        .result-panel {
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .result-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--verde);
+            display: flex;
+            align-items: center;
+        }
+        
+        .result-title i {
+            margin-right: 10px;
+            color: var(--laranja);
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .result-item {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .result-label {
+            font-size: 13px;
+            color: var(--texto-secundario);
+            margin-bottom: 5px;
+        }
+        
+        .result-value {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .result-value.positive {
+            color: var(--verde);
+        }
+        
+        .result-value.negative {
+            color: var(--alerta);
+        }
+
+        /* Gráficos animados */
+        .chart-container {
+            height: 300px;
+            margin: 25px 0;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            position: relative;
+        }
+        
+        .chart-title {
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: #091B1E;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 5;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .chart-subtitle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 14px;
+            color: var(--texto-secundario);
+        }
+
+        /* Abas */
+        .tabs {
+            display: flex;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+        }
+        
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .tab::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: transparent;
+        }
+        
+        .tab.active {
+            background: rgba(236, 112, 0, 0.2);
+            color: var(--laranja);
+        }
+        
+        .tab.active::after {
+            background: var(--laranja);
+        }
+        
+        .tab-content {
+            background: rgba(0,0,0,0.1);
+            padding: 25px;
+            border-radius: 0 0 8px 8px;
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fade-in 0.3s forwards;
+        }
+        
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Botões de navegação */
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .nav-button {
+            background: linear-gradient(135deg, var(--verde), var(--verde-claro));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .nav-button i {
+            margin-right: 8px;
+        }
+        
+        .nav-button.secondary {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Dicas comerciais */
+        .commercial-tip {
+            background: linear-gradient(135deg, var(--verde), var(--verde-claro));
+            padding: 3px;
+            border-radius: 12px;
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        .commercial-tip-inner {
+            background: var(--fundo-secundario);
+            padding: 20px;
+            border-radius: 9px;
+        }
+        
+        .commercial-tip-title {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #091B1E;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .tip-content {
+            font-style: italic;
+            position: relative;
+            padding-left: 25px;
+        }
+        
+        .tip-content::before {
+            content: '"';
+            position: absolute;
+            left: 0;
+            top: -5px;
+            font-size: 40px;
+            color: var(--verde);
+            font-family: Georgia, serif;
+            opacity: 0.5;
+        }
+
+        /* Timeline animada */
+        .timeline {
+            position: relative;
+            margin: 30px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 30px;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--verde), var(--laranja));
+            border-radius: 2px;
+        }
+        
+        .timeline-item {
+            margin-bottom: 30px;
+            padding-left: 70px;
+            position: relative;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 17px;
+            top: 0;
+            width: 30px;
+            height: 30px;
+            background: var(--verde);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--fundo-escuro);
+            font-weight: 700;
+            box-shadow: 0 0 0 5px var(--fundo-escuro);
+        }
+        
+        .timeline-item:nth-child(even) .timeline-dot {
+            background: var(--laranja);
+        }
+        
+        .timeline-content {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .timeline-content::before {
+            content: '';
+            position: absolute;
+            left: -15px;
+            top: 10px;
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-right: 15px solid rgba(0,0,0,0.2);
+        }
+        
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: rgba(255, 255, 255, 0.9);
+            background: #091B1E;
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-title {
+            color: var(--laranja);
+        }
+
+        /* Cards de produto */
+        .product-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        @media (max-width: 992px) {
+            .product-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .product-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .product-card {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .product-header {
+            padding: 15px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .cri-header {
+            background: linear-gradient(135deg, var(--verde), var(--verde-claro));
+        }
+        
+        .cra-header {
+            background: linear-gradient(135deg, var(--laranja), var(--laranja-claro));
+        }
+        
+        .debenture-header {
+            background: linear-gradient(135deg, var(--verde), var(--laranja));
+        }
+        
+        .product-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .product-subtitle {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .product-body {
+            padding: 20px;
+        }
+        
+        .product-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+        
+        .product-feature {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .product-feature i {
+            position: absolute;
+            left: 0;
+            top: 4px;
+            color: var(--verde);
+        }
+        
+        .product-impact {
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .impact-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--texto-secundario);
+        }
+        
+        .impact-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--alerta);
+        }
+        
+        .recovery-time {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+        
+        .recovery-time i {
+            color: var(--verde);
+            margin-right: 8px;
+        }
+
+        /* Detalhes técnicos com abas */
+        .details-tabs {
+            margin-top: 20px;
+        }
+
+        /* Contador de recuperação */
+        .recovery-counter {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 25px 0;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .counter-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--verde);
+        }
+        
+        .counter-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .counter-description {
+            color: var(--texto-secundario);
+            font-size: 14px;
+        }
+        
+        .counter-progress {
+            flex: 1;
+            margin: 0 20px;
+            height: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .counter-progress-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 75%;
+            background: linear-gradient(90deg, var(--alerta), var(--verde));
+            border-radius: 5px;
+        }
+
+        /* Tooltip personalizado */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        
+        .tooltip .tooltip-icon {
+            color: var(--verde);
+            font-size: 16px;
+            margin-left: 5px;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 240px;
+            background-color: var(--fundo-secundario);
+            color: var(--texto);
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            font-weight: 400;
+            font-size: 14px;
+        }
+        
+        .tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--fundo-secundario) transparent transparent transparent;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Dicas visuais */
+        .visual-tip {
+            position: relative;
+            margin: 25px auto;
+            max-width: 600px;
+            background: var(--fundo-secundario);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        
+        .tip-icon {
+            font-size: 36px;
+            color: var(--verde);
+            margin-right: 20px;
+        }
+        
+        .tip-message {
+            font-weight: 500;
+        }
+        
+        .tip-tag {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: var(--verde);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Glossário de termos */
+        .glossary {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .glossary-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            background: #091B1E;
+            padding: 8px 15px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        
+        .glossary-title i {
+            margin-right: 10px;
+        }
+        
+        .term-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .term-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .term {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .term-title {
+            color: var(--verde);
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .term-title i {
+            margin-right: 8px;
+            font-size: 14px;
+        }
+        
+        .term-definition {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+
+
+
+
+
+    <!-- Cabeçalho Íon -->
+    <div class="ion-header">
+        <div class="ion-title">
+            <div class="ion-title-checkbox"></div>
+            <div class="ion-title-text">Academia de Crédito Privado</div>
+        </div>
+
+  <!-- Assinatura com efeito de marca d'água -->
+<div class="watermark">
+    <p><strong>Autor:</strong> Igor Stramandinoli Moita Pontes</p>
+    <p><strong>E-mail:</strong> igor.pontes@itau-unibanco.com.br</p>
+</div>
+
+<style>
+.watermark {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(19, 49, 52, 0.3); /* fundo com transparência */
+    border: 1px solid rgba(166, 207, 46, 0.4); /* borda verde translúcida */
+    border-radius: 10px;
+    padding: 14px 18px;
+    color: rgba(255, 255, 255, 0.6); /* texto branco translúcido */
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 13px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    pointer-events: none;
+    user-select: none;
+    max-width: 300px;
+    opacity: 0.7; /* transparência geral do bloco */
+}
+
+.watermark p {
+    margin: 4px 0;
+}
+
+.watermark strong {
+    color: rgba(166, 207, 46, 0.7); /* destaque verde translúcido */
+}
+</style>
+</style>
+
+  </style>
+</head>
+<body>
+
+
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar as abas
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Desativar todas as abas
+                    const tabContainer = this.parentElement;
+                    tabContainer.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    
+                    // Ocultar todos os conteúdos
+                    const contentId = this.getAttribute('data-tab');
+                    const allContents = tabContainer.parentElement.querySelectorAll('.tab-content');
+                    allContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Ativar a aba clicada e mostrar seu conteúdo
+                    this.classList.add('active');
+                    document.getElementById(contentId).classList.add('active');
+                });
+            });
+            
+            // Gráfico de comparação Marcação na Curva vs. Mercado
+            const comparisonCtx = document.getElementById('comparisonChart').getContext('2d');
+            const comparisonChart = new Chart(comparisonCtx, {
+                type: 'line',
+                data: {
+                    labels: ['D+0', 'D+1', '1 mês', '3 meses', '6 meses', '9 meses', '12 meses', 'Vencimento'],
+                    datasets: [
+                        {
+                            label: 'Valor Investido',
+                            data: [100, 100, 100, 100, 100, 100, 100, 100],
+                            borderColor: '#777',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: false
+                        },
+                        {
+                            label: 'Marcação na Curva',
+                            data: [100, 100.2, 101, 103, 105, 107, 110, 115],
+                            borderColor: '#A6CF2E',
+                            borderWidth: 3,
+                            tension: 0.1,
+                            pointRadius: 4,
+                            fill: false
+                        },
+                        {
+                            label: 'Marcação a Mercado',
+                            data: [100, 98.9, 99.5, 100.8, 104, 106, 109, 115],
+                            borderColor: '#EC7000',
+                            borderWidth: 3,
+                            tension: 0.1,
+                            pointRadius: 4,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#FFF',
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#ddd'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#ddd',
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+            
+            // Gráfico do simulador
+            const simCtx = document.getElementById('simuladorChart').getContext('2d');
+            const simChart = new Chart(simCtx, {
+                type: 'line',
+                data: {
+                    labels: ['D+0', 'D+1', '1 mês', '2 meses', '3 meses', '4 meses', '5 meses', '6 meses', '7 meses', '8 meses', '9 meses', '10 meses', '11 meses', '12 meses'],
+                    datasets: [
+                        {
+                            label: 'Valor Investido',
+                            data: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+                            borderColor: '#777',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: false
+                        },
+                        {
+                            label: 'Rentabilidade Acumulada',
+                            data: [100, 98.9, 99.5, 99.9, 100.3, 100.7, 101.2, 101.8, 102.5, 103.3, 104.2, 105.2, 106.3, 107.4],
+                            borderColor: '#EC7000',
+                            backgroundColor: 'rgba(236, 112, 0, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.1,
+                            pointRadius: 4,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#FFF',
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#ddd'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#ddd',
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1500
+                    }
+                }
+            });
+            
+            // Gráfico de comparação por produto
+            const produtosCtx = document.getElementById('produtosChart').getContext('2d');
+            const produtosChart = new Chart(produtosCtx, {
+                type: 'line',
+                data: {
+                    labels: ['D+0', 'D+1', '1 mês', '2 meses', '3 meses', '4 meses', '5 meses', '6 meses', '7 meses', '8 meses', '9 meses'],
+                    datasets: [
+                        {
+                            label: 'CRI',
+                            data: [100, 98.9, 99.4, 99.8, 100.2, 100.5, 100.9, 101.3, 101.8, 102.3, 102.9],
+                            borderColor: '#A6CF2E',
+                            borderWidth: 3,
+                            tension: 0.1,
+                            pointRadius: 4,
+                            fill: false
+                        },
+                        {
+                            label: 'CRA',
+                            data: [100, 99.05, 99.6, 100.1, 100.5, 101.0, 101.4, 101.9, 102.4, 102.9, 103.5],
+                            borderColor: '#EC7000',
+                            borderWidth: 3,
+                            tension: 0.1,
+                            pointRadius: 4,
+                            fill: false
+                        },
+                        {
+                            label: 'Debênture',
+                            data: [100, 99.25, 99.8, 100.3, 100.8, 101.3, 101.8, 102.3, 102.8, 103.4, 104.0],
+                            borderColor: '#8A2BE2',
+                            borderWidth: 3,
+                            tension: 0.1,
+                            pointRadius: 4,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#FFF',
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#ddd'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            min: 98.5,
+                            max: 104.5,
+                            ticks: {
+                                color: '#ddd',
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 2000
+                    }
+                }
+            });
+            
+            // Sliders do simulador
+            const variacaoSlider = document.getElementById('variacaoSlider');
+            const spreadSlider = document.getElementById('spreadSlider');
+            const taxaSlider = document.getElementById('taxaSlider');
+            const variacaoValor = document.getElementById('variacaoValor');
+            const spreadValor = document.getElementById('spreadValor');
+            const taxaValor = document.getElementById('taxaValor');
+            const impactoTotal = document.getElementById('impactoTotal');
+            const marcacaoD1 = document.getElementById('marcacaoD1');
+            const tempoRecuperacao = document.getElementById('tempoRecuperacao');
+            const retornoAnual = document.getElementById('retornoAnual');
+            
+            function updateSimulatorValues() {
+                const variacaoPct = (variacaoSlider.value / 100).toFixed(2);
+                const spreadPct = (spreadSlider.value / 100).toFixed(2);
+                const taxaPct = (taxaSlider.value / 100).toFixed(2);
+                
+                // Atualizar displays
+                if (parseFloat(variacaoPct) >= 0) {
+                    variacaoValor.textContent = `+${variacaoPct}%`;
+                    variacaoValor.className = 'slider-value positive';
+                } else {
+                    variacaoValor.textContent = `${variacaoPct}%`;
+                    variacaoValor.className = 'slider-value negative';
+                }
+                
+                spreadValor.textContent = `-${spreadPct}%`;
+                taxaValor.textContent = `+${taxaPct}%`;
+                
+                // Calcular impacto total
+                const impactoPct = (parseFloat(variacaoPct) - parseFloat(spreadPct)).toFixed(2);
+                
+                if (parseFloat(impactoPct) >= 0) {
+                    impactoTotal.textContent = `+${impactoPct}%`;
+                    impactoTotal.className = 'result-value positive';
+                } else {
+                    impactoTotal.textContent = `${impactoPct}%`;
+                    impactoTotal.className = 'result-value negative';
+                }
+                
+                // Calcular valor final D+1
+                const valorBase = 200000;
+                const valorFinal = valorBase * (1 + parseFloat(impactoPct) / 100);
+                marcacaoD1.textContent = `R$ ${valorFinal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                
+                // Calcular tempo de recuperação
+                const taxaMensal = Math.pow(1 + parseFloat(taxaPct) / 100, 1/12) - 1;
+                const mesesRecuperacao = Math.abs(parseFloat(impactoPct)) / (taxaMensal * 100);
+                tempoRecuperacao.textContent = `${mesesRecuperacao.toFixed(1)} meses`;
+                
+                // Calcular retorno em 1 ano
+                const retornoFinal = parseFloat(taxaPct) + parseFloat(impactoPct);
+                retornoAnual.textContent = `+${retornoFinal.toFixed(2)}%`;
+                
+                // Atualizar gráfico
+                // Recalcular dados do gráfico com base nos novos valores
+                const dados = [100]; // D+0
+                dados.push(100 + parseFloat(impactoPct)); // D+1
+                
+                // Calcular os próximos 12 meses
+                let valorAtual = 100 + parseFloat(impactoPct);
+                for (let i = 0; i < 12; i++) {
+                    valorAtual += taxaMensal * 100;
+                    dados.push(valorAtual);
+                }
+                
+                simChart.data.datasets[1].data = dados;
+                simChart.update();
+            }
+            
+            if (variacaoSlider && spreadSlider && taxaSlider) {
+                variacaoSlider.addEventListener('input', updateSimulatorValues);
+                spreadSlider.addEventListener('input', updateSimulatorValues);
+                taxaSlider.addEventListener('input', updateSimulatorValues);
+            }
+            
+            // Inicializar todos os valores
+            if (typeof updateSimulatorValues === 'function') {
+                updateSimulatorValues();
+            }
+        });
+    </script>
+</body>
+</html>
+        <div class="ion-progress-bar">
+            <div class="ion-progress-fill"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Card Introdutório -->
+        <div class="animated-card" style="animation-delay: 0.1s;">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="card-title">MARCAÇÃO A MERCADO vs. MARCAÇÃO NA CURVA</div>
+            </div>
+            <div class="card-content">
+                <div class="highlight-box">
+                    <div class="highlight-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="highlight-text">
+                        Dois conceitos essenciais para dominar o crédito privado e transformar o <strong style="color: var(--alerta);">desafio do D+1</strong> em uma oportunidade comercial
+                    </div>
+                </div>
+                
+                <div class="commercial-tip">
+                    <div class="commercial-tip-title">
+                        Dica Estratégica
+                    </div>
+                    <div class="commercial-tip-inner">
+                        <div class="tip-content">
+                            Destaque o longo prazo ao seu cliente. Enfatize que a rentabilidade contratada é o que realmente importa para o investidor que vai até o vencimento, e que a marcação negativa inicial é apenas um reflexo contábil temporário.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="comparison-container">
+                    <div class="comparison-box curve-box">
+                        <div class="comparison-title curve-title">
+                            <i class="fas fa-chart-line"></i> Marcação na Curva
+                        </div>
+                        <div class="comparison-content">
+                            <ul class="feature-list">
+                                <li class="feature-item curve-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    Baseada na taxa de aquisição do título
+                                </li>
+                                <li class="feature-item curve-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    Rentabilidade contratada e previsível
+                                </li>
+                                <li class="feature-item curve-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    Crescimento linear e progressivo
+                                </li>
+                                <li class="feature-item curve-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    Ideal para o investidor que irá até o vencimento
+                                </li>
+                                <li class="feature-item curve-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    Não considera oscilações diárias do mercado
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-box market-box">
+                        <div class="comparison-title market-title">
+                            <i class="fas fa-balance-scale"></i> Marcação a Mercado
+                        </div>
+                        <div class="comparison-content">
+                            <ul class="feature-list">
+                                <li class="feature-item market-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    Baseada no preço atual do mercado secundário
+                                </li>
+                                <li class="feature-item market-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    Reflete as condições atuais de negociação
+                                </li>
+                                <li class="feature-item market-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    Volatilidade conforme oscilações do mercado
+                                </li>
+                                <li class="feature-item market-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    Impacto negativo imediato (D+1) após aplicação
+                                </li>
+                                <li class="feature-item market-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    Converge para a curva conforme se aproxima do vencimento
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Comportamento Comparativo</div>
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dicas Rápidas -->
+        <div class="animated-card" style="animation-delay: 0.7s;">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="card-title">PONTOS-CHAVE</div>
+            </div>
+            <div class="card-content">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"><i class="fas fa-bolt" style="font-size: 14px;"></i></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Transparência Gera Confiança</div>
+                            <p>Apresente sempre os prós e contras do investimento, e nunca esconda o efeito da marcação negativa.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot"><i class="fas fa-bolt" style="font-size: 14px;"></i></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Marcação vs. Rentabilidade</div>
+                            <p>Lembre-se que a marcação é contábil, enquanto a rentabilidade é real e o que importa para quem vai até o vencimento.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot"><i class="fas fa-bolt" style="font-size: 14px;"></i></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Efeito Convergente</div>
+                            <p>Ao se aproximar do vencimento, a marcação a mercado converge para a marcação na curva, eliminando a diferença inicial.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot"><i class="fas fa-bolt" style="font-size: 14px;"></i></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Característica Estrutural</div>
+                            <p>A marcação negativa ocorre mesmo nos títulos de melhor qualidade; é uma característica do mercado, não um sinal de problema.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot"><i class="fas fa-bolt" style="font-size: 14px;"></i></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">O Tempo é Aliado</div>
+                            <p>Quanto maior o prazo do título, menor o impacto relativo da marcação inicial na rentabilidade total.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+        
+        <!-- Como Explicar ao Cliente -->
+        <div class="animated-card" style="animation-delay: 0.5s;">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <div class="card-title">COMO EXPLICAR AO CLIENTE</div>
+            </div>
+            <div class="card-content">
+                <div class="tabs">
+                    <div class="tab active" data-tab="analogia">Analogias</div>
+                    <div class="tab" data-tab="argumentos">Argumentos-chave</div>
+                    <div class="tab" data-tab="objecoes">Objeções</div>
+                </div>
+                
+                <div class="tab-content active" id="analogia">
+                    <div class="commercial-tip">
+                        <div class="commercial-tip-title">
+                            Analogia do Imóvel
+                        </div>
+                        <div class="commercial-tip-inner">
+                            <div class="tip-content">
+                                É como comprar um imóvel: você paga o valor + ITBI + escritura, mas se vender no dia seguinte, esses custos extras não entram no valor de revenda. Se você mantiver o investimento pelo prazo planejado, o retorno contratado compensará essa diferença inicial.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="commercial-tip">
+                        <div class="commercial-tip-title">
+                            Analogia do Carro Zero
+                        </div>
+                        <div class="commercial-tip-inner">
+                            <div class="tip-content">
+                                É similar a comprar um carro zero na concessionária. Quando você sai com ele, ele já vale menos (por volta de 10%) do que o valor que você pagou. No entanto, você não comprou para revender no dia seguinte, mas para usufruir por vários anos.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="commercial-tip">
+                        <div class="commercial-tip-title">
+                            Analogia do Restaurante
+                        </div>
+                        <div class="commercial-tip-inner">
+                            <div class="tip-content">
+                                É como pagar a taxa de serviço em um restaurante. O valor final da refeição inclui essa taxa, mas o valor dos alimentos em si é menor. A diferença é que, no caso do título, essa "taxa" será compensada ao longo do tempo pela rentabilidade contratada.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="argumentos">
+                    <div class="visual-tip">
+                        <div class="tip-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="tip-message">
+                            A marcação negativa é temporária e não afeta a rentabilidade contratada até o vencimento.
+                        </div>
+                        <div class="tip-tag">ARGUMENTO #1</div>
+                    </div>
+                    
+                    <div class="visual-tip">
+                        <div class="tip-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="tip-message">
+                            Em 4-9 meses de rentabilidade, essa marcação negativa inicial já é completamente compensada.
+                        </div>
+                        <div class="tip-tag">ARGUMENTO #2</div>
+                    </div>
+                    
+                    <div class="visual-tip">
+                        <div class="tip-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="tip-message">
+                            A marcação a mercado converge para a marcação na curva quando o título se aproxima do vencimento.
+                        </div>
+                        <div class="tip-tag">ARGUMENTO #3</div>
+                    </div>
+                    
+                    <div class="visual-tip">
+                        <div class="tip-icon">
+                            <i class="fas fa-search-dollar"></i>
+                        </div>
+                        <div class="tip-message">
+                            Este efeito ocorre em todos os títulos de crédito privado, mesmo nos de melhor qualidade e emissores AAA.
+                        </div>
+                        <div class="tip-tag">ARGUMENTO #4</div>
+                    </div>
+                    
+                    <div class="visual-tip">
+                        <div class="tip-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="tip-message">
+                            Quanto maior o prazo do título, menor o impacto relativo desta marcação inicial na rentabilidade total.
+                        </div>
+                        <div class="tip-tag">ARGUMENTO #5</div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="objecoes">
+                    <div class="commercial-tip">
+                        <div class="commercial-tip-title">
+                            "O título não é bom?"
+                        </div>
+                        <div class="commercial-tip-inner">
+                            <div class="tip-content">
+                                De modo algum. Na verdade, é o oposto! Este comportamento ocorre em todos os títulos de crédito privado, mesmo nos de melhor qualidade e emissores AAA. É uma característica estrutural do mercado, não um indicador de qualidade.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="commercial-tip">
+                        <div class="commercial-tip-title">
+                            "Devo vender agora para evitar perdas?"
+                        </div>
+                        <div class="commercial-tip-inner">
+                            <div class="tip-content">
+                                Vender agora seria o equivalente a realizar uma perda que é apenas contábil. Se o título mantém sua qualidade de crédito, a recomendação é aguardar - a rentabilidade contratada compensará essa marcação negativa em poucos meses.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="commercial-tip">
+                        <div class="commercial-tip-title">
+                            "Por que não me avisaram antes?"
+                        </div>
+                        <div class="commercial-tip-inner">
+                            <div class="tip-content">
+                                É justamente por isso que estamos tendo esta conversa agora - para que você entenda como funciona o mercado de crédito privado. Esta é uma característica normal destes investimentos e faz parte do processo de aprendizado. O importante é focar na rentabilidade contratada para o prazo total do investimento.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="commercial-tip">
+                        <div class="commercial-tip-title">
+                            "Prefiro investir em algo que não tenha essa marcação negativa"
+                        </div>
+                        <div class="commercial-tip-inner">
+                            <div class="tip-content">
+                                Entendo sua preocupação. No entanto, os títulos de crédito privado oferecem rentabilidades superiores justamente para compensar características como essa. Se compararmos a rentabilidade líquida após 12 meses, verá que mesmo com esta marcação inicial, o resultado tende a ser superior a alternativas como CDBs ou títulos públicos de risco semelhante.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comparativo por Produto -->
+        <div class="animated-card" style="animation-delay: 0.4s;">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="card-title">COMPARATIVO POR PRODUTO</div>
+            </div>
+            <div class="card-content">
+                <div class="product-cards">
+                    <div class="product-card">
+                        <div class="product-header cri-header">
+                            <div class="product-title">CRI</div>
+                            <div class="product-subtitle">Certificado de Recebíveis Imobiliários</div>
+                        </div>
+                        <div class="product-body">
+                            <ul class="product-features">
+                                <li class="product-feature">
+                                    <i class="fas fa-check-circle"></i>
+                                    Indexado: IPCA+ ou CDI+
+                                </li>
+                                <li class="product-feature">
+                                    <i class="fas fa-check-circle"></i>
+                                    Isenção de IR para pessoa física
+                                </li>
+                                <li class="product-feature">
+                                    <i class="fas fa-check-circle"></i>
+                                    Lastro em créditos imobiliários
+                                </li>
+                            </ul>
+                            
+                            <div class="product-impact">
+                                <div class="impact-title">Impacto médio no D+1:</div>
+                                <div class="impact-value">-0.90% a -1.30%</div>
+                                <div class="recovery-time">
+                                    <i class="fas fa-clock"></i> Recuperação em 5-7 meses
+                                </div>
+                            </div>
+                            
+                            <div class="commercial-tip">
+                                <div class="commercial-tip-title">
+                                    Abordagem Comercial
+                                </div>
+                                <div class="commercial-tip-inner">
+                                    <div class="tip-content">
+                                        Este CRI oferece IPCA+6,2% ao ano, uma taxa muito atrativa considerando a qualidade do emissor (AA). No extrato de amanhã, você verá uma marcação aproximadamente 1,1% abaixo do valor investido. Em 6 meses, essa diferença já terá sido compensada pela rentabilidade.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="product-card">
+                        <div class="product-header cra-header">
+                            <div class="product-title">CRA</div>
+                            <div class="product-subtitle">Certificado de Recebíveis do Agronegócio</div>
+                        </div>
+                        <div class="product-body">
+                            <ul class="product-features">
+                                <li class="product-feature">
+                                    <i class="fas fa-check-circle"></i>
+                                    Indexado: IPCA+ ou CDI+
+                                </li>
+                                <li class="product-feature">
+                                    <i class="fas fa-check-circle"></i>
+                                    Isenção de IR para pessoa física
+                                </li>
+                                <li class="product-feature">
+                                    <i class="fas fa-check-circle"></i>
+                                    Lastro em créditos do agronegócio
+                                </li>
+                            </ul>
+                            
+                            <div class="product-impact">
+                                <div class="impact-title">Impacto médio no D+1:</div>
+                                <div class="impact-value">-0.85% a -1.20%</div>
+                                <div class="recovery-time">
+                                    <i class="fas fa-clock"></i> Recuperação em 4-6 meses
+                                </div>
+                            </div>
+                            
+                            <div class="commercial-tip">
+                                <div class="commercial-tip-title">
+                                    Abordagem Comercial
+                                </div>
+                                <div class="commercial-tip-inner">
+                                    <div class="tip-content">
+                                        Este CRA tem um spread excelente de CDI+2,8% ao ano com risco AAA. A marcação no D+1 mostrará uma variação de aproximadamente -0,95%, mas isso é apenas um reflexo dos custos operacionais e da diferença entre os preços de compra e venda.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="product-card">
+                        <div class="product-header debenture-header">
+                            <div class="product-title">Debênture</div>
+                            <div class="product-subtitle">Título de Dívida Corporativa</div>
+                        </div>
+                        <div class="product-body">
+                            <ul class="product-features">
+                                <li class="product-feature">
+                                    <i class="fas fa-check-circle"></i>
+                                    Indexado: IPCA+ ou CDI+
+                                </li>
+                                <li class="product-feature">
+                                    <i class="fas fa-check-circle"></i>
+                                    Menor impacto no D+1
+                                </li>
+                                <li class="product-feature">
+                                    <i class="fas fa-check-circle"></i>
+                                    Maior liquidez no mercado secundário
+                                </li>
+                            </ul>
+                            
+                            <div class="product-impact">
+                                <div class="impact-title">Impacto médio no D+1:</div>
+                                <div class="impact-value">-0.60% a -0.90%</div>
+                                <div class="recovery-time">
+                                    <i class="fas fa-clock"></i> Recuperação em 3-5 meses
+                                </div>
+                            </div>
+                            
+                            <div class="commercial-tip">
+                                <div class="commercial-tip-title">
+                                    Abordagem Comercial
+                                </div>
+                                <div class="commercial-tip-inner">
+                                    <div class="tip-content">
+                                        Esta Debênture tem o menor impacto na marcação a mercado inicial comparada às demais opções, ficando em apenas -0,75%. Isso acontece porque debêntures tendem a ter maior liquidez no mercado secundário e menor spread entre os preços de compra e venda.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Comparativo de Recuperação por Produto</div>
+                    <canvas id="produtosChart"></canvas>
+                </div>
+                
+                <div class="commercial-tip">
+                    <div class="commercial-tip-title">
+                        Acompanhamento do Cliente
+                    </div>
+                    <div class="commercial-tip-inner">
+                        <div class="tip-content">
+                            Seja preciso e tenha em mãos o impacto esperado e o tempo de recuperação para cada título que você oferece. Marque um contato de acompanhamento para o período de recuperação (4-6 meses) para mostrar como a rentabilidade já compensou a marcação inicial.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Simulador Interativo -->
+        <div class="animated-card" style="animation-delay: 0.3s;">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-sliders-h"></i>
+                </div>
+                <div class="card-title">SIMULADOR INTERATIVO</div>
+            </div>
+            <div class="card-content">
+                <div class="simulator">
+                    <div class="control-panel">
+                        <div style="margin-bottom: 20px;">
+                            <strong>Valor do Investimento:</strong> <span style="color: var(--verde); font-weight: 700;">R$ 200.000,00</span>
+                        </div>
+                        
+                        <div class="commercial-tip">
+                            <div class="commercial-tip-title">
+                                Dica de Atendimento
+                            </div>
+                            <div class="commercial-tip-inner">
+                                <div class="tip-content">
+                                    Mostre exemplos visuais! Use este simulador para demonstrar o conceito ao cliente. Uma imagem vale mais que mil palavras, e ajuda a materializar como a rentabilidade compensa o impacto inicial com o tempo.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Slider para Variação a Mercado -->
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <span>Variação a Mercado</span>
+                                <span id="variacaoValor" class="slider-value negative">-0.70%</span>
+                                <div class="tooltip">
+                                    <i class="fas fa-info-circle tooltip-icon"></i>
+                                    <span class="tooltip-text">Diferença entre preços de compra e venda no mercado secundário</span>
+                                </div>
+                            </div>
+                            <div class="slider-track">
+                                <input type="range" id="variacaoSlider" min="-200" max="200" value="-70">
+                            </div>
+                            <div class="slider-marks">
+                                <span>-2,0%</span>
+                                <span>-1,0%</span>
+                                <span>0,0%</span>
+                                <span>+1,0%</span>
+                                <span>+2,0%</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Slider para Spread da Operação -->
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <span>Spread da Operação</span>
+                                <span id="spreadValor" class="slider-value negative">-0.40%</span>
+                                <div class="tooltip">
+                                    <i class="fas fa-info-circle tooltip-icon"></i>
+                                    <span class="tooltip-text">Custos operacionais da emissão distribuídos entre os investidores</span>
+                                </div>
+                            </div>
+                            <div class="slider-track">
+                                <input type="range" id="spreadSlider" min="0" max="100" value="40">
+                            </div>
+                            <div class="slider-marks">
+                                <span>-0,0%</span>
+                                <span>-0,5%</span>
+                                <span>-1,0%</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Campo para Taxa de Rentabilidade -->
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <span>Taxa de Rentabilidade a.a.</span>
+                                <span id="taxaValor" class="slider-value positive">+8.50%</span>
+                                <div class="tooltip">
+                                    <i class="fas fa-info-circle tooltip-icon"></i>
+                                    <span class="tooltip-text">Taxa contratada do título (como IPCA+6%, CDI+2%, etc.)</span>
+                                </div>
+                            </div>
+                            <div class="slider-track">
+                                <input type="range" id="taxaSlider" min="500" max="1200" value="850">
+                            </div>
+                            <div class="slider-marks">
+                                <span>+5,0%</span>
+                                <span>+7,5%</span>
+                                <span>+10,0%</span>
+                                <span>+12,0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="result-panel">
+                        <div class="result-title">
+                            <i class="fas fa-calculator"></i> Resultados
+                        </div>
+                        <div class="result-grid">
+                            <div class="result-item">
+                                <div class="result-label">IMPACTO TOTAL D+1</div>
+                                <div id="impactoTotal" class="result-value negative">-1.10%</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-label">MARCAÇÃO D+1</div>
+                                <div id="marcacaoD1" class="result-value">R$ 197.800,00</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-label">TEMPO DE RECUPERAÇÃO</div>
+                                <div id="tempoRecuperacao" class="result-value">5.3 meses</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-label">RETORNO EM 1 ANO</div>
+                                <div id="retornoAnual" class="result-value positive">+7.40%</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container" style="margin-top: 20px;">
+                            <div class="chart-title">Evolução da Rentabilidade</div>
+                            <canvas id="simuladorChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- O Problema do D+1 -->
+        <div class="animated-card" style="animation-delay: 0.2s;">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div class="card-title">O DESAFIO DO D+1</div>
+            </div>
+            <div class="card-content">
+                <div class="highlight-box">
+                    <div class="highlight-icon">
+                        <i class="fas fa-question"></i>
+                    </div>
+                    <div class="highlight-text">
+                        Por que a marcação a mercado aparece <strong style="color: var(--alerta);">negativa no D+1</strong> após a aplicação em crédito privado?
+                    </div>
+                </div>
+                
+                <div class="commercial-tip">
+                    <div class="commercial-tip-title">
+                        Dica Comercial
+                    </div>
+                    <div class="commercial-tip-inner">
+                        <div class="tip-content">
+                            Antecipe-se! Informe o cliente sobre a marcação negativa antes da aplicação. A transparência aumenta a confiança e evita surpresas desagradáveis que podem prejudicar o relacionamento.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot">1</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Spread de Compra e Venda</div>
+                            <p>Existe uma diferença entre o preço de compra (que o cliente paga) e o preço de venda (valor de mercado secundário) dos títulos de crédito privado.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot">2</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Custos Operacionais</div>
+                            <p>As emissões de títulos de crédito privado envolvem custos distribuídos entre os investidores, reduzindo o valor líquido inicial.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot">3</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Diferença de Precificação</div>
+                            <p>A instituição financeira usa a marcação a mercado, que reflete o valor de liquidação imediata no mercado secundário, geralmente inferior ao valor de aquisição.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot">4</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Efeito Temporário</div>
+                            <p>Este efeito negativo inicial será compensado pela rentabilidade do título ao longo do tempo. Quanto maior o prazo de vencimento do título, menor é o impacto relativo da marcação inicial.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="commercial-tip">
+                    <div class="commercial-tip-title">
+                        Entendendo Tecnicamente
+                    </div>
+                    <div class="commercial-tip-inner">
+                        <div class="tip-content">
+                            A aplicação em D+0 é feita pelo preço de oferta (compra), mas a marcação em D+1 já reflete o preço de mercado secundário (venda). A diferença entre esses preços, somada aos custos da operação, gera o impacto negativo inicial. É uma característica estrutural do mercado de crédito privado, não um problema de qualidade do título.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+ <!-- Glossário de Termos -->
+        <div class="animated-card" style="animation-delay: 0.6s;">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="card-title">GLOSSÁRIO DE TERMOS</div>
+            </div>
+            <div class="card-content">
+                <div class="commercial-tip">
+                    <div class="commercial-tip-title">
+                        Mensagem Final
+                    </div>
+                    <div class="commercial-tip-inner">
+                        <div class="tip-content">
+                            A marcação negativa no D+1 não deve ser vista como um obstáculo, mas como uma oportunidade para demonstrar seu conhecimento técnico e fortalecer o relacionamento com seus clientes.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="glossary">
+                    <div class="glossary-title">
+                        <i class="fas fa-graduation-cap"></i> Termos Técnicos
+                    </div>
+                    <div class="term-grid">
+                        <div class="term">
+                            <div class="term-title">
+                                <i class="fas fa-chevron-right"></i> Marcação a Mercado (MaM)
+                            </div>
+                            <div class="term-definition">
+                                Método de avaliação de ativos pelo preço atual no mercado, refletindo o valor que seria obtido na venda do ativo naquele momento.
+                            </div>
+                        </div>
+                        
+                        <div class="term">
+                            <div class="term-title">
+                                <i class="fas fa-chevron-right"></i> Marcação na Curva (MnC)
+                            </div>
+                            <div class="term-definition">
+                                Método que valoriza o título pela taxa contratada na compra, sem considerar as oscilações diárias do mercado secundário.
+                            </div>
+                        </div>
+                        
+                        <div class="term">
+                            <div class="term-title">
+                                <i class="fas fa-chevron-right"></i> Mercado Secundário
+                            </div>
+                            <div class="term-definition">
+                                Ambiente onde os títulos já emitidos são negociados entre investidores, com preços que variam conforme condições de mercado.
+                            </div>
+                        </div>
+                        
+                        <div class="term">
+                            <div class="term-title">
+                                <i class="fas fa-chevron-right"></i> Spread de Compra e Venda
+                            </div>
+                            <div class="term-definition">
+                                Diferença entre o preço de compra e o preço de venda de um título no mercado secundário.
+                            </div>
+                        </div>
+                        
+                        <div class="term">
+                            <div class="term-title">
+                                <i class="fas fa-chevron-right"></i> Duration
+                            </div>
+                            <div class="term-definition">
+                                Indicador que mede o prazo médio ponderado de recebimento dos fluxos de caixa de um título, considerando pagamentos de juros e principal.
+                            </div>
+                        </div>
+                        
+                        <div class="term">
+                            <div class="term-title">
+                                <i class="fas fa-chevron-right"></i> Rating de Crédito
+                            </div>
+                            <div class="term-definition">
+                                Classificação do risco de crédito do emissor ou do título, geralmente variando de AAA (menor risco) a D (inadimplência).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        

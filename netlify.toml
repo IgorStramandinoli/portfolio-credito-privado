@@ -1,0 +1,12 @@
+[build]
+  publish = "./"
+
+[[redirects]]
+  from = "/en"
+  to = "/?lang=en"
+  status = 200
+
+[[redirects]]
+  from = "/pt"
+  to = "/?lang=pt"
+  status = 200

@@ -1,0 +1,62 @@
+<!doctype html><meta charset='utf-8'><title>Igor Stramandinoli — Portfólio</title>
+<body style="font-family:Inter,Arial;margin:0;background:#f8fafc;color:#0f172a">
+<header style="position:sticky;top:0;background:#fff7;border-bottom:1px solid #e2e8f0;backdrop-filter:saturate(180%) blur(8px)">
+  <div style="max-width:1100px;margin:0 auto;padding:12px 16px;display:flex;justify-content:space-between;align-items:center">
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="width:36px;height:36px;border-radius:16px;background:#4338ca;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600">IS</div>
+      <div><div style="font-size:12px;color:#64748b" id="label">Portfólio</div><div style="font-weight:600">Igor Stramandinoli</div></div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="present" style="padding:6px 10px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;font-size:13px">Modo entrevista</button>
+      <button id="lang" style="padding:6px 10px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;font-size:13px">EN</button>
+    </div>
+  </div>
+</header>
+<main style="max-width:1100px;margin:0 auto;padding:16px">
+  <p id="desc" style="color:#475569">Coleção com 10 materiais em HTML sobre marcação a mercado, spreads, liquidez, garantias, setores e frameworks práticos de análise.</p>
+  <div id="grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:12px"></div>
+</main>
+<script>
+let lang = (new URLSearchParams(location.search).get('lang') || 'pt').toLowerCase();
+const PT = [
+  {t:'Marcação a Mercado em D+1 e efeitos de spreads + Calculadoras',d:'Como a marcação em D+1 afeta P&L, DV01 e decisões de trading; inclui calculadoras.',h:'materiais/01/index.html'},
+  {t:'Dinâmica de Mercado de balcão',d:'Fluxos, formação de preço, liquidez e as particularidades do mercado OTC de crédito.',h:'materiais/02-dinamica-mercado-balcao.html'},
+  {t:'Spreads',d:'Decomposição, drivers e leitura prática de curvas e prêmios de risco.',h:'materiais/03-spreads.html'},
+  {t:'Matriz',d:'Framework matricial para avaliação rápida por emissor/setor/estrutura.',h:'materiais/04-matriz.html'},
+  {t:'Modelagem de Liquidez',d:'Modelos práticos de liquidez: janelas, haircuts, stress e governança.',h:'materiais/05-modelagem-liquidez.html'},
+  {t:'Pagamentos de Cupom',d:'Calendário, convenções e impactos no carry e na precificação diária.',h:'materiais/06-pagamentos-cupom.html'},
+  {t:'Garantias',d:'Principais estruturas, testes de suficiência e pontos de atenção em diligência.',h:'materiais/07-garantias.html'},
+  {t:'Setores',d:'Painel setorial com indicadores-chave e alertas de risco por indústria.',h:'materiais/08-setores.html'},
+  {t:'Quizz',d:'Bateria curta de perguntas para revisar conceitos essenciais.',h:'materiais/09-quizz.html'},
+  {t:'Diretagem (extra)',d:'Material complementar com observações de diretagem.',h:'materiais/10-diretagem-extra.html'},
+];
+const EN = [
+  {t:'Mark-to-Market on T+1 and spread effects + Calculators',d:'How T+1 marking impacts P&L, DV01 and trading decisions; includes calculators.',h:'materiais/01/index.html'},
+  {t:'OTC Market Dynamics',d:'Flows, price formation and liquidity in the OTC credit market.',h:'materiais/02-dinamica-mercado-balcao.html'},
+  {t:'Credit Spreads',d:'Decomposition, drivers and a practical read of curves and risk premia.',h:'materiais/03-spreads.html'},
+  {t:'Matrix Framework',d:'Matrix-based framework for quick assessment by issuer/sector/structure.',h:'materiais/04-matriz.html'},
+  {t:'Liquidity Modeling',d:'Practical liquidity models: windows, haircuts, stress and governance.',h:'materiais/05-modelagem-liquidez.html'},
+  {t:'Coupon Payments',d:'Calendars, conventions and carry/mark-to-market daily impacts.',h:'materiais/06-pagamentos-cupom.html'},
+  {t:'Collateral & Guarantees',d:'Key structures, sufficiency tests and due diligence checkpoints.',h:'materiais/07-garantias.html'},
+  {t:'Sectors',d:'Sector dashboard with key indicators and risk alerts.',h:'materiais/08-setores.html'},
+  {t:'Quiz',d:'Short question set to review essential concepts.',h:'materiais/09-quizz.html'},
+  {t:'Syndication (extra)',d:'Complementary notes on syndication.',h:'materiais/10-diretagem-extra.html'},
+];
+function render(){
+  const data = lang==='en'?EN:PT;
+  const g=document.getElementById('grid'); g.innerHTML='';
+  data.forEach(m=>{
+    const a=document.createElement('article'); a.style.cssText='border:1px solid #e2e8f0;border-radius:16px;background:#fff;padding:16px';
+    a.innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px"><h4 style="margin:0;font-size:16px">${m.t}</h4></div>
+    <p style="margin:8px 0 0;color:#475569;font-size:14px">${m.d}</p>
+    <div style="margin-top:12px"><a target="_blank" href="${m.h}" style="font-size:14px;text-decoration:underline">${lang==='en'?'Open material':'Abrir material'}</a></div>`;
+    g.appendChild(a);
+  });
+  document.getElementById('label').textContent = lang==='en'?'Portfolio':'Portfólio';
+  document.getElementById('desc').textContent = lang==='en'?'A set of 10 HTML materials on mark-to-market, spreads, liquidity, guarantees, sectors and practical analysis frameworks.':'Coleção com 10 materiais em HTML sobre marcação a mercado, spreads, liquidez, garantias, setores e frameworks práticos de análise.';
+  document.getElementById('lang').textContent = lang==='en'?'PT':'EN';
+}
+document.getElementById('lang').onclick=()=>{ lang = lang==='en'?'pt':'en'; history.replaceState(null,'',location.pathname+'?lang='+lang); render(); };
+document.getElementById('present').onclick=()=>{ document.body.classList.toggle('present'); };
+render();
+</script>

@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Impacto em D+1 - Crédito Privado</title>
+    <!-- Adicionado Chart.js para criar gráficos interativos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        :root {
+            --laranja: #EC7000;
+            --verde: #A6CF2E;
+            --preto-escuro: #091B1E;
+            --preto-medio: #133134;
+            --branco: #FFFFFF;
+            --vermelho: #FF0000;
+        }
+        
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--preto-escuro);
+            color: var(--branco);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-top: 70px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding-top: 20px;
+            }
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--verde);
+            margin-bottom: 30px;
+        }
+        
+        header h1 {
+            color: var(--branco);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            color: var(--verde);
+            font-size: 1.2rem;
+        }
+        
+        .destaque {
+            color: var(--verde);
+            font-weight: bold;
+        }
+        
+        .laranja {
+            color: var(--laranja);
+            font-weight: bold;
+        }
+        
+        .card {
+            background-color: var(--preto-medio);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card h2 {
+            color: var(--laranja);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--verde);
+            padding-bottom: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background-color: var(--preto-escuro);
+            color: var(--branco);
+            cursor: pointer;
+            border: 1px solid var(--verde);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            margin-right: 5px;
+        }
+        
+        .tab.active {
+            background-color: var(--verde);
+            color: var(--preto-escuro);
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: var(--preto-medio);
+            border: 1px solid #1D4D52;
+            border-radius: 0 8px 8px 8px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #1D4D52;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: var(--preto-medio);
+            color: var(--branco);
+        }
+        
+        button {
+            background-color: var(--laranja);
+            color: var(--branco);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background-color: #d86500;
+        }
+        
+        .result-container {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: var(--preto-escuro);
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .result-title {
+            color: var(--verde);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .result-box {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .result-item {
+            flex: 1;
+            padding: 15px;
+            background-color: var(--preto-medio);
+            border-radius: 8px;
+            margin: 0 10px;
+            text-align: center;
+            border: 1px solid #1D4D52;
+        }
+        
+        .result-item h4 {
+            color: var(--laranja);
+            margin-bottom: 10px;
+        }
+        
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .step-container {
+            margin-top: 30px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background-color: var(--verde);
+            color: var(--preto-escuro);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .step-text {
+            flex-grow: 1;
+        }
+
+        .highlight-box {
+            background-color: rgba(166, 207, 46, 0.1);
+            border-left: 4px solid var(--verde);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .highlight-box h3 {
+            color: var(--verde);
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            color: var(--branco);
+        }
+        
+        th {
+            background-color: var(--verde);
+            color: var(--preto-escuro);
+            text-align: left;
+            padding: 12px 15px;
+        }
+        
+        td {
+            border-bottom: 1px solid var(--preto-escuro);
+            padding: 12px 15px;
+        }
+        
+        tr:nth-child(even) {
+            background-color: rgba(19, 49, 52, 0.8);
+        }
+        
+        tr:nth-child(odd) {
+            background-color: var(--preto-escuro);
+        }
+
+        #aviso-simulacao {
+            font-style: italic;
+            color: var(--laranja);
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .data-anbima-box {
+            padding: 15px;
+            background-color: var(--preto-medio);
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #1D4D52;
+        }
+        
+        /* Estilos para os gráficos */
+        .chart-container {
+            height: 300px;
+            margin: 30px 0;
+            background-color: rgba(9, 27, 30, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            position: relative;
+        }
+        
+        .chart-title {
+            margin-bottom: 15px;
+            color: var(--verde);
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 0 15px;
+        }
+        
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+            border-radius: 3px;
+        }
+        
+        .chart-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .chart-tab {
+            padding: 5px 15px;
+            background-color: var(--preto-escuro);
+            color: var(--branco);
+            cursor: pointer;
+            border: 1px solid var(--verde);
+            margin: 0 5px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .chart-tab.active {
+            background-color: var(--verde);
+            color: var(--preto-escuro);
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .result-box {
+                flex-direction: column;
+            }
+            
+            .result-item {
+                margin: 10px 0;
+            }
+            
+            .tab {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Assinatura com efeito de marca d'água no canto superior esquerdo -->
+<div class="watermark">
+    <p><strong>Autor:</strong> Igor Stramandinoli Moita Pontes</p>
+    <p><strong>E-mail:</strong> igor.pontes@itau-unibanco.com.br</p>
+</div>
+
+<style>
+.watermark {
+    position: fixed;
+    top: 10px; /* trocado de bottom para top */
+    right: 10px; /* trocado de right para left */
+    background-color: rgba(19, 49, 52, 0.3); /* fundo com transparência */
+    border: 1px solid rgba(166, 207, 46, 0.4); /* borda verde translúcida */
+    border-radius: 10px;
+    padding: 14px 18px;
+    color: rgba(255, 255, 255, 0.6); /* texto branco translúcido */
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 13px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    pointer-events: none;
+    user-select: none;
+    max-width: 300px;
+    opacity: 0.7; /* transparência geral do bloco */
+}
+
+.watermark p {
+    margin: 4px 0;
+}
+
+.watermark strong {
+    color: rgba(166, 207, 46, 0.7); /* destaque verde translúcido */
+}
+</style>
+
+    <div class="container">
+        <header>
+            <h1>Simulador de Impacto em D+1 - Crédito Privado</h1>
+            <p>Calculadora de Precificação para Especialistas de Investimentos</p>
+            <p style="color: #EC7000; font-size: 1rem; margin-top: 5px;">Versão com gráficos ilustrativos e campos editáveis</p>
+        </header>
+        
+        <div class="card">
+            <h2>Bem-vindo ao Simulador</h2>
+            <p>Este simulador foi desenvolvido para ajudar você, especialista do Íon, a entender e calcular o impacto da precificação de crédito privado na marcação a mercado em D+1, permitindo que você possa antecipar esse efeito ao seu cliente.</p>
+            
+            <div class="highlight-box">
+                <h3>Por que isso é importante?</h3>
+                <p>A compreensão do impacto em D+1 possibilita:</p>
+                <ul>
+                    <li>Maior transparência nas negociações com o cliente</li>
+                    <li>Antecipar possíveis questionamentos sobre a variação de preço</li>
+                    <li>Demonstrar conhecimento técnico sobre o produto</li>
+                    <li>Fortalecer a relação de confiança com o cliente</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="simulador">Simulador</div>
+            <div class="tab" data-tab="passo-a-passo">Passo a Passo</div>
+            <div class="tab" data-tab="argumentos">Argumentos Comerciais</div>
+        </div>
+        
+        <div id="simulador" class="tab-content active">
+            <h3>Simulador de Impacto em D+1</h3>
+            <p>Preencha os dados abaixo para simular o impacto na marcação a mercado no dia seguinte (D+1) após a contratação do ativo de crédito privado.</p>
+            
+            <div class="data-anbima-box">
+                <h3>Dados do Data ANBIMA</h3>
+                <p>Preencha com os valores reais ou utilize os dados pré-carregados do exemplo PEJA11 da ANBIMA:</p>
+                
+                <table>
+                    <tr>
+                        <th style="width: 40%">Informação</th>
+                        <th style="width: 30%">Taxa (%)</th>
+                        <th style="width: 30%">PU</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Dados Contratados</strong></td>
+                        <td><input type="number" id="taxa-contratada" class="form-control" value="7.00" step="0.01" style="width: 100%"></td>
+                        <td><input type="number" id="pu-contratado" class="form-control" value="1166.553" step="0.001" style="width: 100%"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dados Indicativos</strong></td>
+                        <td><input type="number" id="taxa-indicativa" class="form-control" value="7.63" step="0.01" style="width: 100%"></td>
+                        <td><input type="number" id="pu-indicativo" class="form-control" value="1139.589" step="0.001" style="width: 100%"></td>
+                    </tr>
+                </table>
+                
+                <p>Os valores pré-carregados são para fins didáticos. Em um cenário real, você deverá consultar o Data ANBIMA.</p>
+                
+                <button id="resetar-valores" class="calcular-btn" style="background-color: var(--preto-medio); margin-top: 10px;">Restaurar Valores Padrão</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="quantidade">Quantidade</label>
+                <input type="number" id="quantidade" class="form-control" value="250" placeholder="Ex: 250" style="background-color: var(--preto-medio); color: var(--branco); border: 1px solid var(--laranja);">
+            </div>
+            
+            <button id="calcular" class="calcular-btn">Calcular Impacto em D+1</button>
+            
+            <div id="resultado" class="result-container">
+                <h3 class="result-title">Resultado da Simulação</h3>
+                <p id="aviso-simulacao">Esta é uma simulação considerando algumas premissas como: o preço de ontem será o mesmo preço de amanhã, para fins didáticos e de aproximação.</p>
+                
+                <div class="result-box">
+                    <div class="result-item" style="border: 1px solid #1D4D52;">
+                        <h4>Valor Financeiro Contratado</h4>
+                        <div class="result-value" id="valor-contratado">R$ 0,00</div>
+                    </div>
+                    
+                    <div class="result-item" style="border: 1px solid #1D4D52;">
+                        <h4>Valor Financeiro em D+1</h4>
+                        <div class="result-value" id="valor-d1">R$ 0,00</div>
+                    </div>
+                    
+                    <div class="result-item" style="border: 1px solid #1D4D52;">
+                        <h4>Diferença</h4>
+                        <div class="result-value" id="diferenca">R$ 0,00</div>
+                        <div id="percentual-diferenca">(0%)</div>
+                    </div>
+                </div>
+                
+                <!-- Novo bloco com gráficos -->
+                <div>
+                    <div class="chart-tabs">
+                        <div class="chart-tab active" data-chart="comparacao">Comparação</div>
+                        <div class="chart-tab" data-chart="evolucao">Evolução</div>
+                    </div>
+                    
+                    <div id="grafico-comparacao" class="chart-container">
+                        <div class="chart-title">Comparação dos Valores</div>
+                        <canvas id="comparacao-chart"></canvas>
+                    </div>
+                    
+                    <div id="grafico-evolucao" class="chart-container" style="display: none;">
+                        <div class="chart-title">Evolução dos Valores ao Longo do Tempo</div>
+                        <canvas id="evolucao-chart"></canvas>
+                    </div>
+                    
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #A6CF2E;"></div>
+                            <div>Valor Contratado</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #EC7000;"></div>
+                            <div>Valor a Mercado</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="highlight-box" style="border: 1px solid #1D4D52;">
+                    <h3>Explicação do Resultado</h3>
+                    <p id="explicacao-resultado">O impacto em D+1 na marcação a mercado é calculado pela diferença entre o valor contratado e o valor indicativo do dia anterior (que será utilizado para a marcação a mercado). Esta diferença representa o impacto que o cliente verá em sua carteira no dia seguinte à contratação.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="passo-a-passo" class="tab-content">
+            <h3>Como Calcular o Impacto em D+1</h3>
+            <p>Aprenda o processo passo a passo para calcular o impacto da marcação a mercado em D+1 para crédito privado.</p>
+            
+            <div class="step-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Acessar o "Data ANBIMA" e pesquisar pelo título desejado</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Ir em "Calcular Ativo" > Inserir informações das condições de contratação do dia > Calcular</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-text">Completar o nosso box com as informações de Taxa de contratação e PU de contratação fornecidos</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-text">Voltar nas informações do ativo no Data ANBIMA em "Ver Mais"</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-text">Clicar na aba de "Preços"</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <div class="step-text">Descer até a tabela de "PU Indicativo"</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">7</div>
+                    <div class="step-text">Preencher o nosso box com as informações da Taxa Indicativa e PU indicativo referente a D-1 da operação</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">8</div>
+                    <div class="step-text">Calcular a diferença entre PUs (PU Indicativo - PU Contratado)</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">9</div>
+                    <div class="step-text">Multiplicar esta diferença pela quantidade para obter o impacto em D+1</div>
+                </div>
+            </div>
+            
+            <div class="highlight-box">
+                <h3>Fórmula Simplificada</h3>
+                <p>Para calcular o impacto em D+1:</p>
+                <ol>
+                    <li>Diferença de PU = PU Indicativo - PU Contratado</li>
+                    <li>Impacto em D+1 = Diferença de PU × Quantidade</li>
+                </ol>
+                <p style="margin-top: 15px; color: var(--laranja);">
+                    <strong>Nota:</strong> Quando o PU Indicativo for menor que o PU Contratado, o resultado será negativo, indicando perda na marcação a mercado.
+                </p>
+            </div>
+            
+            <!-- Adicionado gráfico ilustrativo ao passo-a-passo -->
+            <div class="chart-container">
+                <div class="chart-title">Ilustração do Cálculo do Impacto</div>
+                <canvas id="ilustracao-chart"></canvas>
+            </div>
+        </div>
+        
+        <div id="argumentos" class="tab-content">
+            <h3>Argumentos Comerciais para Clientes</h3>
+            <p>Utilize estes argumentos para converter o conhecimento técnico em valor para seus clientes.</p>
+            
+            <div class="highlight-box" style="background-color: rgba(236, 112, 0, 0.1); border-left: 4px solid var(--laranja);">
+                <h3 style="color: var(--laranja);">Transparência como Diferencial</h3>
+                <p>"Antes de efetivarmos esta operação de crédito privado, gostaria de mostrar a você o impacto que teremos na marcação a mercado amanhã. Esta transparência nos permite tomar decisões mais informadas."</p>
+            </div>
+            
+            <div class="highlight-box" style="background-color: rgba(236, 112, 0, 0.1); border-left: 4px solid var(--laranja);">
+                <h3 style="color: var(--laranja);">Explicação Técnica Simplificada</h3>
+                <p>"Quando compramos este título a uma taxa de X%, diferente da taxa indicativa de mercado (Y%), haverá uma marcação a mercado que impactará o valor da sua carteira em aproximadamente R$ Z no próximo dia. Isto é apenas um ajuste contábil, não um ganho ou perda real, e não afeta o rendimento final do título se mantido até o vencimento."</p>
+            </div>
+            
+            <div class="highlight-box" style="background-color: rgba(236, 112, 0, 0.1); border-left: 4px solid var(--laranja);">
+                <h3 style="color: var(--laranja);">Valor da Assessoria</h3>
+                <p>"Poucos assessores conseguem antecipar este impacto com precisão. Fazemos esta análise para evitar surpresas e garantir que você entenda completamente os movimentos da sua carteira."</p>
+            </div>
+            
+            <div class="highlight-box" style="background-color: rgba(236, 112, 0, 0.1); border-left: 4px solid var(--laranja);">
+                <h3 style="color: var(--laranja);">Foco no Longo Prazo</h3>
+                <p>"Este ajuste inicial é apenas uma marcação contábil. O importante é que, mantendo o título até o vencimento, você receberá exatamente a rentabilidade contratada hoje, independente destas oscilações de curto prazo."</p>
+            </div>
+            
+            <div class="highlight-box">
+                <h3>Dicas para Abordagem</h3>
+                <ul>
+                    <li>Apresente esta análise <strong>antes</strong> da efetivação da operação</li>
+                    <li>Use linguagem simples e evite termos técnicos excessivos</li>
+                    <li>Relacione o impacto ao valor total da carteira (contextualize)</li>
+                    <li>Compare com outros investimentos quando pertinente</li>
+                    <li>Não tente minimizar impactos negativos - seja transparente</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Funções auxiliares
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        }
+        
+        function formatPercent(value) {
+            return new Intl.NumberFormat('pt-BR', { style: 'percent', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value / 100);
+        }
+        
+        // Gerenciamento de Tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remover classe active de todas as tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                
+                // Adicionar classe active à tab clicada
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+                
+                // Se for a tab de passo-a-passo, renderizar o gráfico ilustrativo
+                if (tab.dataset.tab === 'passo-a-passo') {
+                    renderizarGraficoIlustrativo();
+                }
+            });
+        });
+        
+        // Gerenciamento de tabs dos gráficos
+        document.querySelectorAll('.chart-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remover classe active de todas as tabs
+                document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+                
+                // Adicionar classe active à tab clicada
+                tab.classList.add('active');
+                
+                // Esconder todos os gráficos
+                document.getElementById('grafico-comparacao').style.display = 'none';
+                document.getElementById('grafico-evolucao').style.display = 'none';
+                
+                // Mostrar o gráfico selecionado
+                document.getElementById('grafico-' + tab.dataset.chart).style.display = 'block';
+            });
+        });
+        
+        // Dados padrão de exemplo
+        const dadosExemplo = {
+            taxaContratada: 7.00,
+            puContratado: 1166.553485,
+            taxaIndicativa: 7.63,
+            puIndicativo: 1139.589514,
+            quantidade: 250
+        };
+        
+        // Variáveis para armazenar os gráficos
+        let graficoComparacao;
+        let graficoEvolucao;
+        let graficoIlustrativo;
+        
+        // Restaurar valores padrão
+        document.getElementById('resetar-valores').addEventListener('click', () => {
+            document.getElementById('taxa-contratada').value = dadosExemplo.taxaContratada;
+            document.getElementById('pu-contratado').value = dadosExemplo.puContratado;
+            document.getElementById('taxa-indicativa').value = dadosExemplo.taxaIndicativa;
+            document.getElementById('pu-indicativo').value = dadosExemplo.puIndicativo;
+            document.getElementById('quantidade').value = dadosExemplo.quantidade;
+        });
+        
+        // Calculadora
+        document.getElementById('calcular').addEventListener('click', () => {
+            // Obter valores dos inputs
+            const taxaContratada = parseFloat(document.getElementById('taxa-contratada').value) || dadosExemplo.taxaContratada;
+            const puContratado = parseFloat(document.getElementById('pu-contratado').value) || dadosExemplo.puContratado;
+            const taxaIndicativa = parseFloat(document.getElementById('taxa-indicativa').value) || dadosExemplo.taxaIndicativa;
+            const puIndicativo = parseFloat(document.getElementById('pu-indicativo').value) || dadosExemplo.puIndicativo;
+            const quantidade = parseInt(document.getElementById('quantidade').value) || dadosExemplo.quantidade;
+            
+            // Calcular valores
+            const puDiff = puIndicativo - puContratado; // Diferença entre PUs (será negativa quando indicativo < contratado)
+            const valorContratado = puContratado * quantidade;
+            const valorD1 = puIndicativo * quantidade;
+            const diferenca = puDiff * quantidade; // Diferença multiplicada pela quantidade (mantém o sinal)
+            const percentualDiferenca = (diferenca / valorContratado) * 100;
+            
+            // Preencher resultados
+            document.getElementById('valor-contratado').textContent = formatCurrency(valorContratado);
+            document.getElementById('valor-d1').textContent = formatCurrency(valorD1);
+            document.getElementById('diferenca').textContent = formatCurrency(diferenca);
+            document.getElementById('percentual-diferenca').textContent = `(${percentualDiferenca.toFixed(2)}%)`;
+            
+            // Estilizar a diferença baseado se é positiva ou negativa
+            if (diferenca > 0) {
+                document.getElementById('diferenca').style.color = '#A6CF2E'; // Verde para positivo
+                document.getElementById('percentual-diferenca').style.color = '#A6CF2E';
+            } else if (diferenca < 0) {
+                document.getElementById('diferenca').style.color = '#FF0000'; // Vermelho para negativo
+                document.getElementById('percentual-diferenca').style.color = '#FF0000';
+            } else {
+                document.getElementById('diferenca').style.color = 'white';
+                document.getElementById('percentual-diferenca').style.color = 'white';
+            }
+            
+            // Personalizar explicação
+            let explicacao = `Nesta simulação, ao contratar o título a uma taxa de ${taxaContratada.toFixed(2)}% (PU de ${puContratado.toFixed(2)}), quando a taxa indicativa é de ${taxaIndicativa.toFixed(2)}% (PU de ${puIndicativo.toFixed(2)}), o cliente terá um impacto de ${formatCurrency(Math.abs(diferenca))} em D+1 na marcação a mercado para a quantidade de ${quantidade} títulos.`;
+            
+            if (puDiff < 0) {
+                explicacao += ` Como o PU indicativo é menor que o PU contratado, este será um impacto negativo, representando apenas uma marcação contábil inicial, que será compensada pelo rendimento do título ao longo do tempo se mantido até o vencimento.`;
+            } else if (puDiff > 0) {
+                explicacao += ` Como o PU indicativo é maior que o PU contratado, este será um impacto positivo, o que pode representar uma oportunidade de entrada.`;
+            }
+            
+            document.getElementById('explicacao-resultado').textContent = explicacao;
+            
+            // Atualizar gráficos
+            renderizarGraficoComparacao(valorContratado, valorD1, diferenca);
+            renderizarGraficoEvolucao(valorContratado, valorD1, diferenca, puContratado, puIndicativo, quantidade);
+            
+            // Exibir resultados
+            document.getElementById('resultado').style.display = 'block';
+        });
+        
+        /**
+         * Renderiza o gráfico de comparação entre valor contratado e valor em D+1
+         */
+        function renderizarGraficoComparacao(valorContratado, valorD1, diferenca) {
+            const ctx = document.getElementById('comparacao-chart').getContext('2d');
+            
+            // Cor para a diferença (vermelho se negativo, verde se positivo)
+            const corDiferenca = diferenca < 0 ? '#FF0000' : '#A6CF2E';
+            
+            // Destruir gráfico anterior se existir
+            if (graficoComparacao) {
+                graficoComparacao.destroy();
+            }
+            
+            // Criar novo gráfico
+            graficoComparacao = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Valor Contratado', 'Valor em D+1', 'Diferença'],
+                    datasets: [{
+                        data: [valorContratado, valorD1, Math.abs(diferenca)],
+                        backgroundColor: [
+                            '#A6CF2E', // Verde para valor contratado (invertido)
+                            '#EC7000', // Laranja para valor a mercado (invertido)
+                            corDiferenca
+                        ],
+                        borderColor: [
+                            '#A6CF2E',
+                            '#EC7000',
+                            corDiferenca
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += formatCurrency(context.parsed.y);
+                                    }
+                                    
+                                    // Adicionar informação adicional para a diferença
+                                    if (context.dataIndex === 2) {
+                                        label += ` (${diferenca < 0 ? 'Impacto Negativo' : 'Impacto Positivo'})`;
+                                    }
+                                    
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return formatCurrency(value).replace('R$', '');
+                                },
+                                color: '#FFFFFF'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#FFFFFF'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        /**
+         * Renderiza o gráfico de evolução do valor ao longo do tempo
+         */
+        function renderizarGraficoEvolucao(valorContratado, valorD1, diferenca, puContratado, puIndicativo, quantidade) {
+            const ctx = document.getElementById('evolucao-chart').getContext('2d');
+            
+            // Destruir gráfico anterior se existir
+            if (graficoEvolucao) {
+                graficoEvolucao.destroy();
+            }
+            
+            // Gerar dados simulados para a evolução dos valores
+            const dias = ['D0', 'D+1', 'D+2', 'D+3', 'D+4', 'D+5']; // Removido D-1
+            
+            // Valor na curva (valor contratado) permanece constante
+            const valorCurva = [
+                valorContratado,           // D0 é o valor contratado
+                valorContratado,           // D+1 em diante, o valor na curva permanece igual ao contratado
+                valorContratado,
+                valorContratado,
+                valorContratado,
+                valorContratado
+            ];
+            
+            // Valor a mercado varia
+            const valorMercado = [
+                valorContratado,           // D0 é o valor contratado (momento da compra)
+                valorD1                    // D+1 é o valor indicativo
+            ];
+            
+            // Para D+2 em diante, simular pequenas variações
+            let valorAtual = valorD1;
+            for (let i = 0; i < 4; i++) {
+                // Variação aleatória de -0.5% a +0.5%
+                const variacao = 1 + (Math.random() * 0.01 - 0.005);
+                valorAtual = valorAtual * variacao;
+                valorMercado.push(valorAtual);
+            }
+            
+            // Criar novo gráfico
+            graficoEvolucao = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dias,
+                    datasets: [
+                        {
+                            label: 'Valor na Curva',
+                            data: valorCurva,
+                            borderColor: '#A6CF2E', // Alterado para verde
+                            backgroundColor: 'rgba(166, 207, 46, 0.1)',
+                            fill: false,
+                            tension: 0.1,
+                            borderWidth: 2,
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Valor a Mercado',
+                            data: valorMercado,
+                            borderColor: '#EC7000', // Alterado para laranja
+                            backgroundColor: 'rgba(236, 112, 0, 0.1)',
+                            fill: false,
+                            tension: 0.1,
+                            borderWidth: 2,
+                            pointRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const datasetLabel = context.dataset.label || '';
+                                    const value = context.raw;
+                                    return datasetLabel + ': ' + formatCurrency(value);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: function(value) {
+                                    return formatCurrency(value).replace('R$', '');
+                                },
+                                color: '#FFFFFF'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#FFFFFF'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        /**
+         * Renderiza o gráfico ilustrativo para a aba de passo-a-passo
+         */
+        function renderizarGraficoIlustrativo() {
+            const ctx = document.getElementById('ilustracao-chart').getContext('2d');
+            
+            // Destruir gráfico anterior se existir
+            if (graficoIlustrativo) {
+                graficoIlustrativo.destroy();
+            }
+            
+            // Usar os valores do exemplo
+            const puContratado = dadosExemplo.puContratado;
+            const puIndicativo = dadosExemplo.puIndicativo;
+            const quantidade = dadosExemplo.quantidade;
+            
+            const valorContratado = puContratado * quantidade;
+            const valorD1 = puIndicativo * quantidade;
+            const diferenca = (puIndicativo - puContratado) * quantidade;
+            
+            // Criar dados para o gráfico
+            const labels = ['PU Contratado', 'PU Indicativo', 'Impacto em D+1'];
+            const dados = [puContratado, puIndicativo, diferenca];
+            
+            // Cores para os dados
+            const cores = [
+                '#A6CF2E', // Verde para valor contratado (invertido)
+                '#EC7000', // Laranja para valor indicativo (invertido)
+                diferenca < 0 ? '#FF0000' : '#A6CF2E'
+            ];
+            
+            // Criar novo gráfico
+            graficoIlustrativo = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: dados,
+                        backgroundColor: cores,
+                        borderColor: cores,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const dataIndex = context.dataIndex;
+                                    let value = context.raw;
+                                    
+                                    // Formatar valores adequadamente
+                                    if (dataIndex < 2) {
+                                        return 'Valor: ' + value.toFixed(2);
+                                    } else {
+                                        return 'Impacto: ' + formatCurrency(value);
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                color: '#FFFFFF'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#FFFFFF'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

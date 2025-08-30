@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Material 1 • Marcação a Mercado em D+1 e efeitos de spreads</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
+    .tab-btn[aria-selected="true"]{ background:#312e81; color:white; }
+    iframe{ width:100%; height: calc(100vh - 220px); border: 1px solid #e2e8f0; border-radius: 12px; background:white;}
+    @media (max-width: 768px){ iframe{ height:60vh; } }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <header class="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="../../index.html" class="h-9 w-9 rounded-2xl bg-indigo-700 text-white flex items-center justify-center font-semibold">IS</a>
+        <div>
+          <div class="text-sm text-slate-500 leading-tight">Portfólio • Material 1</div>
+          <h1 class="text-base font-semibold leading-tight">Marcação a Mercado em D+1 e efeitos de spreads</h1>
+        </div>
+      </div>
+      <a href="../../index.html" class="text-sm px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50">Voltar</a>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6">
+    <p class="text-slate-600">Este material reúne a análise e as calculadoras enviadas, organizadas em abas.</p>
+
+    <div class="mt-4 flex flex-wrap gap-2" role="tablist" aria-label="Material 1 Tabs">
+      <button class="tab-btn px-3 py-2 rounded-xl border border-slate-300" role="tab" aria-selected="true" data-target="#tab-analise">Análise D+1</button>
+      <button class="tab-btn px-3 py-2 rounded-xl border border-slate-300" role="tab" aria-selected="false" data-target="#tab-marcacao">Marcação x Curva</button>
+      <button class="tab-btn px-3 py-2 rounded-xl border border-slate-300" role="tab" aria-selected="false" data-target="#tab-calc1">Calculadora D+1 (A)</button>
+      <button class="tab-btn px-3 py-2 rounded-xl border border-slate-300" role="tab" aria-selected="false" data-target="#tab-calc2">Calculadora D+1 (B)</button>
+    </div>
+
+    <section id="tab-analise" role="tabpanel" class="mt-4">
+      <iframe src="analise-d1.html"></iframe>
+    </section>
+    <section id="tab-marcacao" role="tabpanel" class="mt-4 hidden">
+      <iframe src="marcacao-mercado.html"></iframe>
+    </section>
+    <section id="tab-calc1" role="tabpanel" class="mt-4 hidden">
+      <iframe src="calculadora-d1-1.html"></iframe>
+    </section>
+    <section id="tab-calc2" role="tabpanel" class="mt-4 hidden">
+      <iframe src="calculadora-d1-2.html"></iframe>
+    </section>
+  </main>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('[role="tabpanel"]');
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabs.forEach(b => b.setAttribute('aria-selected', 'false'));
+        panels.forEach(p => p.classList.add('hidden'));
+        btn.setAttribute('aria-selected', 'true');
+        const sel = document.querySelector(btn.dataset.target);
+        sel.classList.remove('hidden');
+      });
+    });
+  </script>
+</body>
+</html>

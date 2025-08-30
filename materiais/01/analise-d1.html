@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Íon - Análise PU Indicativo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-orange: #EC7000;
+            --primary-green: #A6CF2E;
+            --dark-bg: #091B1E;
+            --dark-secondary: #133134;
+            --white: #FFFFFF;
+            --gray: #7A8B8F;
+            --gray-light: #B4C1C4;
+            --success: #A6CF2E;
+            --warning: #EC7000;
+            --error: #E74C3C;
+            --border: rgba(166, 207, 46, 0.2);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--dark-bg);
+            color: var(--white);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--dark-secondary) 100%);
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid var(--primary-green);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-green);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            color: var(--dark-bg);
+            box-shadow: 0 4px 15px rgba(166, 207, 46, 0.3);
+        }
+
+        .logo h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .logo h1 span {
+            color: var(--primary-green);
+            font-weight: 700;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-green);
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .upload-card, .stats-card {
+            background: var(--dark-secondary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-orange), var(--primary-green));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .upload-card.active::before {
+            transform: scaleX(1);
+        }
+
+        .upload-card.active {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 20px rgba(166, 207, 46, 0.2);
+        }
+
+        .upload-card.error {
+            border-color: var(--error);
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.2);
+        }
+
+        .upload-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .upload-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--white);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--gray);
+            border-radius: 12px;
+            padding: 2rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.02);
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-green);
+            background: rgba(166, 207, 46, 0.05);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary-green);
+            background: rgba(166, 207, 46, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.7;
+        }
+
+        .upload-text {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-status {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .upload-status.success {
+            background: rgba(166, 207, 46, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(166, 207, 46, 0.3);
+        }
+
+        .upload-status.error {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+
+        /* Stats Card */
+        .stats-card {
+            border: 1px solid rgba(166, 207, 46, 0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border: 1px solid rgba(166, 207, 46, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            background: rgba(166, 207, 46, 0.05);
+            border-color: var(--primary-green);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        /* Assets Panel */
+        .assets-panel {
+            background: var(--dark-secondary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(166, 207, 46, 0.2);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .panel-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-icon {
+            padding: 0.5rem 0.75rem;
+            background: rgba(166, 207, 46, 0.1);
+            border: 1px solid var(--primary-green);
+            border-radius: 8px;
+            color: var(--primary-green);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-icon:hover {
+            background: var(--primary-green);
+            color: var(--dark-bg);
+            transform: translateY(-2px);
+        }
+
+        /* Search and Filter */
+        .search-filter {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: var(--dark-bg);
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(166, 207, 46, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: var(--gray);
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            background: var(--dark-bg);
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 0.9rem;
+            min-width: 140px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:hover {
+            border-color: var(--primary-green);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-green);
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .assets-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .assets-table th {
+            background: var(--dark-bg);
+            padding: 0.75rem 0.5rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--primary-green);
+            cursor: pointer;
+            transition: color 0.2s;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .assets-table th:hover {
+            color: var(--primary-green);
+        }
+
+        .assets-table td {
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+        }
+
+        .assets-table tr {
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .assets-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .assets-table tr.selected {
+            background: rgba(166, 207, 46, 0.1);
+            border-left: 3px solid var(--primary-green);
+        }
+
+        .ticker-cell {
+            font-weight: 600;
+            color: var(--primary-green);
+            font-family: 'Courier New', monospace;
+        }
+
+        .impact-cell {
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .impact-positive {
+            color: var(--success);
+        }
+
+        .impact-negative {
+            color: var(--error);
+        }
+
+        .impact-neutral {
+            color: var(--gray);
+        }
+
+        /* Calculator Panel */
+        .calculator-panel {
+            background: var(--dark-secondary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(236, 112, 0, 0.3);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .calculator-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-orange);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--gray);
+        }
+
+        .currency-input {
+            position: relative;
+        }
+
+        .currency-input::before {
+            content: 'R$';
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-weight: 500;
+            pointer-events: none;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 1rem;
+            padding-left: 2.5rem;
+            background: var(--dark-bg);
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-orange);
+            box-shadow: 0 0 0 3px rgba(236, 112, 0, 0.1);
+        }
+
+        .selected-asset {
+            background: rgba(166, 207, 46, 0.1);
+            border: 1px solid var(--primary-green);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .asset-name {
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .asset-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .calculation-result {
+            background: var(--dark-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .calculation-result.positive {
+            border-color: var(--success);
+            background: rgba(166, 207, 46, 0.05);
+        }
+
+        .calculation-result.negative {
+            border-color: var(--error);
+            background: rgba(231, 76, 60, 0.05);
+        }
+
+        .result-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-orange);
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .result-item {
+            text-align: center;
+        }
+
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        .result-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 0.25rem;
+        }
+
+        .impact-summary {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .impact-summary.positive {
+            background: rgba(166, 207, 46, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .impact-summary.negative {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+
+        .net-result {
+            margin-top: 1rem;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, rgba(236, 112, 0, 0.1), rgba(236, 112, 0, 0.05));
+            border-radius: 12px;
+            border: 2px solid var(--primary-orange);
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(236, 112, 0, 0.2);
+        }
+
+        .net-result-label {
+            font-size: 0.9rem;
+            color: var(--gray-light);
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        .net-result-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-orange);
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .net-result-value.profit {
+            color: var(--success);
+            text-shadow: 0 2px 4px rgba(166, 207, 46, 0.3);
+        }
+
+        .net-result-value.loss {
+            color: var(--error);
+            text-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn {
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-green);
+            color: var(--dark-bg);
+        }
+
+        .btn-primary:hover {
+            background: #96bf1e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(166, 207, 46, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-orange);
+            border: 1px solid var(--primary-orange);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(236, 112, 0, 0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            color: var(--white);
+            margin-bottom: 0.5rem;
+        }
+
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-green);
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--gray);
+            border-top-color: var(--primary-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Tooltips */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark-bg);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            white-space: nowrap;
+            font-size: 0.85rem;
+            z-index: 1000;
+            border: 1px solid var(--primary-green);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #96bf1e;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .upload-section {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .calculator-panel {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .upload-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-stats {
+                display: none;
+            }
+            
+            .search-filter {
+                flex-direction: column;
+            }
+            
+            .assets-table {
+                font-size: 0.8rem;
+            }
+            
+            .assets-table th,
+            .assets-table td {
+                padding: 0.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">Íon</div>
+                <h1>Análise <span>PU Indicativo</span></h1>
+            </div>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalAssets">0</div>
+                    <div class="stat-label">Ativos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="positiveImpacts">0</div>
+                    <div class="stat-label">Positivos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="negativeImpacts">0</div>
+                    <div class="stat-label">Negativos</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Seção de Upload -->
+        <div class="upload-section">
+            <div class="upload-card" id="uploadCard1">
+                <div class="upload-title">
+                    📊 PU Indicativo
+                </div>
+                <div class="upload-area" id="uploadArea1">
+                    <input type="file" id="fileInput1" class="file-input" accept=".xlsx,.xls,.csv">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">Arraste ou clique para enviar</div>
+                </div>
+                <div class="upload-status" id="uploadStatus1"></div>
+            </div>
+
+            <div class="upload-card" id="uploadCard2">
+                <div class="upload-title">
+                    📈 PU Real
+                </div>
+                <div class="upload-area" id="uploadArea2">
+                    <input type="file" id="fileInput2" class="file-input" accept=".xlsx,.xls,.csv">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">Arraste ou clique para enviar</div>
+                </div>
+                <div class="upload-status" id="uploadStatus2"></div>
+            </div>
+
+            <div class="stats-card">
+                <div class="upload-title">
+                    📋 Estatísticas
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value" id="commonAssets">0</div>
+                        <div class="stat-label">Em Comum</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="avgImpact">-</div>
+                        <div class="stat-label">Impacto Médio</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="minImpactTicker">-</div>
+                        <div class="stat-label">Menor Impacto</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="maxImpactTicker">-</div>
+                        <div class="stat-label">Maior Impacto</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="main-content">
+            <!-- Tabela de Ativos -->
+            <div class="assets-panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        💼 Ativos Disponíveis
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn-icon tooltip" data-tooltip="Exportar dados" onclick="exportData()">📥</button>
+                        <button class="btn-icon tooltip" data-tooltip="Atualizar" onclick="refreshData()">🔄</button>
+                    </div>
+                </div>
+
+                <div class="search-filter">
+                    <input type="text" class="search-input" id="searchInput" placeholder="🔍 Buscar ticker, empresa ou setor...">
+                    <select class="filter-select" id="typeFilter">
+                        <option value="">Todos os tipos</option>
+                    </select>
+                    <select class="filter-select" id="impactFilter">
+                        <option value="">Todos os impactos</option>
+                        <option value="positive">Positivos</option>
+                        <option value="negative">Negativos</option>
+                        <option value="neutral">Neutros</option>
+                    </select>
+                </div>
+
+                <div class="table-container" id="assetsTableContainer">
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <h3>Nenhum ativo carregado</h3>
+                        <p>Faça upload das duas planilhas para começar a análise</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculadora -->
+            <div class="calculator-panel">
+                <div class="calculator-title">
+                    🧮 Calculadora de Investimento
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Valor Disponível do Cliente</label>
+                    <div class="currency-input">
+                        <input type="text" class="input-field" id="availableAmount" placeholder="0,00">
+                    </div>
+                </div>
+
+                <div id="selectedAssetInfo" style="display: none;">
+                    <div class="selected-asset">
+                        <div class="asset-name" id="selectedAssetName">-</div>
+                        <div class="asset-details">
+                            <div>PU Indicativo: <span id="selectedPuIndicativo">-</span></div>
+                            <div>PU Real: <span id="selectedPuReal">-</span></div>
+                            <div>Diferença: <span id="selectedDifference">-</span></div>
+                            <div>Tipo: <span id="selectedType">-</span></div>
+                            <div>Setor: <span id="selectedSetor">-</span></div>
+                            <div>Fee: <span id="selectedFee">-</span></div>
+                        </div>
+                    </div>
+
+                    <div class="calculation-result" id="calculationResult" style="display: none;">
+                        <div class="result-title">Resultado da Simulação</div>
+                        
+                        <div class="result-grid">
+                            <div class="result-item">
+                                <div class="result-value" id="maxQuantity">0</div>
+                                <div class="result-label">Quantidade Máxima</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-value" id="totalInvestment">R$ 0,00</div>
+                                <div class="result-label">Valor Investido</div>
+                            </div>
+                        </div>
+
+                        <div class="impact-summary" id="impactSummary">
+                            Impacto D+1: R$ 0,00
+                        </div>
+                        
+                        <div class="net-result" id="netResult">
+                            <div class="net-result-label">Resultado Líquido (Investido - |Impacto|)</div>
+                            <div class="net-result-value" id="netResultValue">R$ 0,00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="calculatorEmpty" class="empty-state">
+                    <div class="empty-icon">🎯</div>
+                    <p>Selecione um ativo na tabela para calcular o investimento</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        // Variáveis globais
+        let importedData1 = {};
+        let importedData2 = {};
+        let combinedData = {};
+        let selectedAsset = null;
+        let filteredAssets = [];
+        let sortColumn = null;
+        let sortDirection = 'asc';
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            setupFileUploads();
+            setupSearchAndFilters();
+            setupCalculator();
+        });
+
+        // Setup dos uploads
+        function setupFileUploads() {
+            setupFileUpload(1);
+            setupFileUpload(2);
+        }
+
+        function setupFileUpload(sheetNumber) {
+            const uploadArea = document.getElementById(`uploadArea${sheetNumber}`);
+            const fileInput = document.getElementById(`fileInput${sheetNumber}`);
+            
+            // Click para abrir seletor de arquivo
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            // Prevenir comportamento padrão do drag and drop
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+
+            // Highlight da área de drop
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            // Handle do drop
+            uploadArea.addEventListener('drop', handleDrop, false);
+
+            // Handle da seleção de arquivo
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFile(e.target.files[0], sheetNumber);
+                }
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            function highlight(e) {
+                uploadArea.classList.add('dragover');
+            }
+
+            function unhighlight(e) {
+                uploadArea.classList.remove('dragover');
+            }
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+
+                if (files.length > 0) {
+                    handleFile(files[0], sheetNumber);
+                }
+            }
+        }
+
+        // Processamento de arquivos
+        function handleFile(file, sheetNumber) {
+            const uploadStatus = document.getElementById(`uploadStatus${sheetNumber}`);
+            const uploadCard = document.getElementById(`uploadCard${sheetNumber}`);
+            
+            uploadStatus.innerHTML = '<div class="loading"><div class="spinner"></div> Processando...</div>';
+            uploadStatus.className = 'upload-status';
+            uploadStatus.style.display = 'block';
+            uploadCard.classList.remove('active', 'error');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
+                    
+                    const processedData = processData(jsonData, sheetNumber);
+                    
+                    if (sheetNumber === 1) importedData1 = processedData;
+                    else importedData2 = processedData;
+                    
+                    const totalAssets = Object.keys(processedData).length;
+                    
+                    uploadStatus.innerHTML = `✅ ${totalAssets} ativos carregados`;
+                    uploadStatus.className = 'upload-status success';
+                    uploadCard.classList.add('active');
+                    
+                    if (Object.keys(importedData1).length > 0 && Object.keys(importedData2).length > 0) {
+                        compareData();
+                        updateAssetsTable();
+                        updateStats();
+                        populateFilters();
+                    }
+                } catch (error) {
+                    console.error(`Error processing file ${sheetNumber}:`, error);
+                    uploadStatus.innerHTML = `❌ Erro ao ler o arquivo. Verifique o formato.`;
+                    uploadStatus.className = 'upload-status error';
+                    uploadCard.classList.add('error');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Processamento dos dados da planilha
+        function processData(rawData, sheetNumber) {
+            const data = {};
+            if (!rawData || rawData.length < 2) return data;
+
+            const headers = rawData[0].map(h => h.toString().toLowerCase().trim());
+            const columnMap = {};
+            
+            // Mapeamento flexível de colunas
+            headers.forEach((header, index) => {
+                if (header.includes('codigo') || header.includes('código') || header.includes('ticker')) columnMap.ticker = index;
+                else if (header.includes('empresa') || header.includes('emissor')) columnMap.empresa = index;
+                else if (header.includes("tipo")) columnMap.tipo = index;
+                else if (header.includes("setor") || header.includes("atuação")) columnMap.setor = index;
+                else if (header.includes("fee") || header.includes("estimado")) columnMap.fee = index;
+                
+                if (sheetNumber === 1 && (header.includes("pu indicativo") || header.includes("pu_indicativo"))) columnMap.pu = index;
+                if (sheetNumber === 2 && (header.includes("pu real") || header.includes("pu_real") || header.includes("%pu par") || header.includes("pu par"))) columnMap.pu = index;
+            });
+
+            // Fallback para coluna 'pu' se não for específica
+            if (columnMap.pu === undefined) {
+                const puIndex = headers.findIndex(h => h.includes('pu'));
+                if (puIndex !== -1) columnMap.pu = puIndex;
+            }
+
+            if (columnMap.ticker === undefined || columnMap.pu === undefined) {
+                throw new Error(`Não foi possível encontrar as colunas 'Ticker' ou 'PU' na Planilha ${sheetNumber}.`);
+            }
+
+            for (let i = 1; i < rawData.length; i++) {
+                const row = rawData[i];
+                const ticker = row[columnMap.ticker] ? row[columnMap.ticker].toString().toUpperCase().trim() : null;
+                
+                if (ticker) {
+                    const puValue = row[columnMap.pu];
+                    const pu = typeof puValue === 'string' ? parseFloat(puValue.replace(',', '.')) : parseFloat(puValue);
+
+                    data[ticker] = {
+                        ticker: ticker,
+                        empresa: row[columnMap.empresa] || 'N/A',
+                        tipo: 'N/A',
+                        setor: row[columnMap.setor] || 'N/A',
+                        fee: row[columnMap.fee] ? row[columnMap.fee].toString() : 'N/A',
+                        pu: isNaN(pu) ? 0 : pu,
+                    };
+                }
+            }
+            return data;
+        }
+
+        // Comparação de dados
+        function compareData() {
+            combinedData = {};
+            
+            // Usa a Planilha 2 (PU Real) como base
+            Object.keys(importedData2).forEach(ticker => {
+                if (importedData1[ticker]) {
+                    const data1 = importedData1[ticker]; // Dados da Planilha 1 (PU Indicativo)
+                    const data2 = importedData2[ticker]; // Dados da Planilha 2 (PU Real)
+                    
+                    const puIndicativo = data1.pu;
+                    const puReal = data2.pu;
+                    const difference = puIndicativo - puReal;
+
+                    let tipo = 'DEB';
+                    if (ticker.startsWith('CRI')) {
+                        tipo = 'CRI';
+                    } else if (ticker.startsWith('CRA')) {
+                        tipo = 'CRA';
+                    }
+
+                    let feeEstimado = 'N/A';
+                    if (data2.fee && !isNaN(parseFloat(data2.fee.replace(',', '.')))) {
+                        feeEstimado = (parseFloat(data2.fee.replace(',', '.')) * 100).toFixed(2) + '%';
+                    }
+
+                    combinedData[ticker] = {
+                        ...data2, // Usa todos os dados da Planilha 2 como base
+                        pu: puIndicativo, // Sobrescreve apenas o PU com o valor indicativo
+                        puReal: puReal,
+                        difference: difference,
+                        impactPer100: difference * 100,
+                        impactType: difference > 0 ? 'positive' : difference < 0 ? 'negative' : 'neutral',
+                        tipo: tipo, // Define o tipo com base na nova lógica
+                        fee: feeEstimado // Define o fee com a nova formatação
+                    };
+                }
+            });
+        }
+
+        // Atualização da tabela de ativos
+        function updateAssetsTable() {
+            const container = document.getElementById('assetsTableContainer');
+            
+            if (Object.keys(combinedData).length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <h3>Nenhum ativo em comum</h3>
+                        <p>Verifique se as planilhas contêm ativos com os mesmos tickers</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const tableHTML = `
+                <div class="table-container">
+                    <table class="assets-table">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('ticker')">Ticker ↕</th>
+                                <th onclick="sortTable('empresa')">Empresa ↕</th>
+                                <th onclick="sortTable('tipo')">Tipo ↕</th>
+                                <th onclick="sortTable('setor')">Setor ↕</th>
+                                <th onclick="sortTable('pu')">PU Indicativo ↕</th>
+                                <th onclick="sortTable('puReal')">PU Real ↕</th>
+                                <th onclick="sortTable('difference')">Diferença ↕</th>
+                                <th onclick="sortTable('fee')">Fee ↕</th>
+                                <th onclick="sortTable('impactPer100')">Impacto/100 ↕</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assetsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            container.innerHTML = tableHTML;
+            filteredAssets = Object.values(combinedData);
+            renderTableRows();
+        }
+
+        // Renderização das linhas da tabela
+        function renderTableRows() {
+            const tbody = document.getElementById('assetsTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = filteredAssets.map(asset => `
+                <tr onclick="selectAsset('${asset.ticker}')" ${selectedAsset === asset.ticker ? 'class="selected"' : ''}>
+                    <td class="ticker-cell">${asset.ticker}</td>
+                    <td>${asset.empresa}</td>
+                    <td>${asset.tipo}</td>
+                    <td>${asset.setor}</td>
+                    <td>${formatCurrency(asset.pu)}</td>
+                    <td>${formatCurrency(asset.puReal)}</td>
+                    <td class="impact-cell impact-${asset.impactType}">${formatCurrency(asset.difference)}</td>
+                    <td>${asset.fee}</td>
+                    <td class="impact-cell impact-${asset.impactType}">R$ ${formatNumber(asset.impactPer100)}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Seleção de ativo
+        function selectAsset(ticker) {
+            selectedAsset = ticker;
+            const asset = combinedData[ticker];
+            
+            // Atualizar tabela
+            renderTableRows();
+            
+            // Atualizar calculadora
+            document.getElementById('selectedAssetName').textContent = `${ticker} - ${asset.empresa}`;
+            document.getElementById('selectedPuIndicativo').textContent = formatCurrency(asset.pu);
+            document.getElementById('selectedPuReal').textContent = formatCurrency(asset.puReal);
+            document.getElementById('selectedDifference').textContent = formatCurrency(asset.difference);
+            document.getElementById('selectedType').textContent = asset.tipo;
+            document.getElementById('selectedSetor').textContent = asset.setor;
+            document.getElementById('selectedFee').textContent = asset.fee;
+            
+            document.getElementById('selectedAssetInfo').style.display = 'block';
+            document.getElementById('calculatorEmpty').style.display = 'none';
+            
+            calculateInvestment();
+        }
+
+        // Setup da busca e filtros
+        function setupSearchAndFilters() {
+            const searchInput = document.getElementById('searchInput');
+            const typeFilter = document.getElementById('typeFilter');
+            const impactFilter = document.getElementById('impactFilter');
+
+            searchInput.addEventListener('input', applyFilters);
+            typeFilter.addEventListener('change', applyFilters);
+            impactFilter.addEventListener('change', applyFilters);
+        }
+
+        // Aplicação de filtros
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const typeFilter = document.getElementById('typeFilter').value;
+            const impactFilter = document.getElementById('impactFilter').value;
+
+            filteredAssets = Object.values(combinedData).filter(asset => {
+                const matchesSearch = !searchTerm || 
+                    asset.ticker.toLowerCase().includes(searchTerm) ||
+                    asset.empresa.toLowerCase().includes(searchTerm) ||
+                    asset.setor.toLowerCase().includes(searchTerm);
+                
+                const matchesType = !typeFilter || asset.tipo === typeFilter;
+                const matchesImpact = !impactFilter || asset.impactType === impactFilter;
+
+                return matchesSearch && matchesType && matchesImpact;
+            });
+
+            renderTableRows();
+        }
+
+        // População dos filtros
+        function populateFilters() {
+            const typeFilter = document.getElementById('typeFilter');
+            const types = [...new Set(Object.values(combinedData).map(asset => asset.tipo))];
+            
+            typeFilter.innerHTML = '<option value="">Todos os tipos</option>';
+            types.forEach(type => {
+                if (type !== 'N/A') {
+                    typeFilter.innerHTML += `<option value="${type}">${type}</option>`;
+                }
+            });
+        }
+
+        // Setup da calculadora
+        function setupCalculator() {
+            const availableAmount = document.getElementById('availableAmount');
+            availableAmount.addEventListener('input', (e) => {
+                // Remove tudo exceto números e vírgula
+                let value = e.target.value.replace(/[^\d,]/g, '');
+                
+                // Formata o valor
+                if (value) {
+                    const parts = value.split(',');
+                    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                    value = parts.join(',');
+                }
+                
+                e.target.value = value;
+                calculateInvestment();
+            });
+        }
+
+        // Cálculo do investimento
+        function calculateInvestment() {
+            if (!selectedAsset) return;
+
+            const asset = combinedData[selectedAsset];
+            const availableAmountStr = document.getElementById('availableAmount').value.replace(/\./g, '').replace(',', '.');
+            const availableAmount = parseFloat(availableAmountStr) || 0;
+
+            if (availableAmount <= 0) {
+                document.getElementById('calculationResult').style.display = 'none';
+                return;
+            }
+
+            const maxQuantity = Math.floor(availableAmount / asset.puReal);
+            const totalInvestment = maxQuantity * asset.puReal;
+            const impactD1 = maxQuantity * asset.difference;
+            // Sempre subtrai o valor absoluto do impacto do valor investido
+            const netResult = totalInvestment - Math.abs(impactD1);
+
+            document.getElementById('maxQuantity').textContent = formatNumber(maxQuantity);
+            document.getElementById('totalInvestment').textContent = formatCurrency(totalInvestment);
+            
+            const impactSummary = document.getElementById('impactSummary');
+            impactSummary.textContent = `Impacto D+1: ${formatCurrency(impactD1)}`;
+            impactSummary.className = `impact-summary ${asset.impactType}`;
+
+            // Atualizar resultado líquido
+            const netResultValue = document.getElementById('netResultValue');
+            netResultValue.textContent = formatCurrency(netResult);
+            
+            // Como sempre subtraímos, o resultado sempre será menor que o investimento
+            // Mas podemos indicar se o impacto original era positivo ou negativo
+            if (asset.impactType === 'negative') {
+                netResultValue.className = 'net-result-value loss';
+            } else if (asset.impactType === 'positive') {
+                netResultValue.className = 'net-result-value profit';
+            } else {
+                netResultValue.className = 'net-result-value';
+            }
+
+            const resultDiv = document.getElementById('calculationResult');
+            resultDiv.style.display = 'block';
+            resultDiv.className = `calculation-result ${asset.impactType}`;
+        }
+
+        // Atualização das estatísticas
+        function updateStats() {
+            const assets = Object.values(combinedData);
+            const positiveImpacts = assets.filter(a => a.impactType === 'positive').length;
+            const negativeImpacts = assets.filter(a => a.impactType === 'negative').length;
+            
+            const avgImpact = assets.length > 0 ? 
+                assets.reduce((sum, a) => sum + a.impactPer100, 0) / assets.length : 0;
+            
+            const maxImpactAsset = assets.reduce((max, asset) => 
+                Math.abs(asset.impactPer100) > Math.abs(max.impactPer100) ? asset : max, assets[0]);
+            
+            const minImpactAsset = assets.reduce((min, asset) => 
+                Math.abs(asset.impactPer100) < Math.abs(min.impactPer100) ? asset : min, assets[0]);
+
+            document.getElementById('totalAssets').textContent = assets.length;
+            document.getElementById('positiveImpacts').textContent = positiveImpacts;
+            document.getElementById('negativeImpacts').textContent = negativeImpacts;
+            document.getElementById('commonAssets').textContent = assets.length;
+            document.getElementById('avgImpact').textContent = formatCurrency(avgImpact);
+            document.getElementById('maxImpactTicker').textContent = maxImpactAsset ? maxImpactAsset.ticker : '-';
+            document.getElementById('minImpactTicker').textContent = minImpactAsset ? minImpactAsset.ticker : '-';
+        }
+
+        // Ordenação da tabela
+        function sortTable(column) {
+            if (sortColumn === column) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColumn = column;
+                sortDirection = 'asc';
+            }
+
+            filteredAssets.sort((a, b) => {
+                let aVal = a[column];
+                let bVal = b[column];
+                
+                if (typeof aVal === 'string') {
+                    const comparison = aVal.localeCompare(bVal);
+                    return sortDirection === 'asc' ? comparison : -comparison;
+                }
+                
+                return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+            });
+            
+            renderTableRows();
+        }
+
+        // Exportação de dados
+        function exportData() {
+            if (Object.keys(combinedData).length === 0) {
+                alert('Nenhum dado para exportar!');
+                return;
+            }
+
+            const csvContent = generateCSV();
+            downloadFile(csvContent, 'analise_pu_indicativo.csv', 'text/csv');
+        }
+
+        function generateCSV() {
+            const headers = ['Ticker', 'Empresa', 'Tipo', 'Setor', 'PU Indicativo', 'PU Real', 'Diferença', 'Fee', 'Impacto/100'];
+            const rows = Object.values(combinedData).map(asset => [
+                asset.ticker,
+                asset.empresa,
+                asset.tipo,
+                asset.setor,
+                asset.pu.toString().replace('.', ','),
+                asset.puReal.toString().replace('.', ','),
+                asset.difference.toString().replace('.', ','),
+                asset.fee,
+                asset.impactPer100.toString().replace('.', ',')
+            ]);
+            
+            const csvRows = [headers, ...rows].map(row => row.join(';'));
+            return csvRows.join('\n');
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function refreshData() {
+            if (Object.keys(combinedData).length > 0) {
+                updateAssetsTable();
+                updateStats();
+            }
+        }
+
+        // Funções utilitárias
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+                minimumFractionDigits: 2
+            }).format(value);
+        }
+
+        function formatNumber(value) {
+            return new Intl.NumberFormat('pt-BR').format(value);
+        }
+    </script>
+</body>
+</html>
