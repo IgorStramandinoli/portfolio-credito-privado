@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento de Cupons em Crédito Privado - Íon Itaú</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #091B1E;
+            color: #FFFFFF;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 0;
+            border-bottom: 2px solid #A6CF2E;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #A6CF2E;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .section {
+            background: #133134;
+            border-radius: 8px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(166, 207, 46, 0.2);
+        }
+
+        .section h2 {
+            color: #A6CF2E;
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(166, 207, 46, 0.3);
+        }
+
+        .section h3 {
+            color: #EC7000;
+            font-size: 1.3em;
+            margin: 30px 0 20px;
+        }
+
+        .highlight-box {
+            background: rgba(236, 112, 0, 0.1);
+            border-left: 4px solid #EC7000;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .formula-box {
+            background: #091B1E;
+            border: 2px solid #A6CF2E;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .client-card {
+            background: #091B1E;
+            border: 2px solid #A6CF2E;
+            border-radius: 8px;
+            padding: 30px;
+            position: relative;
+        }
+
+        .client-card.destaque {
+            border-color: #EC7000;
+        }
+
+        .client-label {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #091B1E;
+            padding: 0 15px;
+            font-weight: 700;
+            font-size: 1.1em;
+            color: #A6CF2E;
+        }
+
+        .client-card.destaque .client-label {
+            color: #EC7000;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: #091B1E;
+        }
+
+        th {
+            background: #A6CF2E;
+            color: #091B1E;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(166, 207, 46, 0.2);
+        }
+
+        tr:hover {
+            background: rgba(166, 207, 46, 0.05);
+        }
+
+        .metric-box {
+            background: rgba(166, 207, 46, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #A6CF2E;
+        }
+
+        .metric-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .alert-box {
+            background: rgba(236, 112, 0, 0.2);
+            border: 2px solid #EC7000;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .alert-box h4 {
+            color: #EC7000;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        ul {
+            margin-left: 30px;
+            margin-top: 15px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 30px 0;
+            margin: 30px 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #A6CF2E;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .timeline-item:nth-child(odd) {
+            text-align: right;
+            padding-right: 50%;
+            padding-left: 0;
+        }
+
+        .timeline-item:nth-child(even) {
+            text-align: left;
+            padding-left: 50%;
+            padding-right: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: #EC7000;
+            border-radius: 50%;
+            border: 3px solid #091B1E;
+        }
+
+        .comercial-tip {
+            background: rgba(166, 207, 46, 0.15);
+            border: 2px solid #A6CF2E;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .comercial-tip::before {
+            content: "💡 ARGUMENTO COMERCIAL";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #091B1E;
+            padding: 0 15px;
+            color: #A6CF2E;
+            font-weight: 700;
+            font-size: 0.85em;
+        }
+
+        .conceito-box {
+            background: #091B1E;
+            border: 1px solid rgba(166, 207, 46, 0.3);
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .conceito-box h4 {
+            color: #EC7000;
+            margin-bottom: 15px;
+        }
+
+        strong {
+            color: #A6CF2E;
+        }
+
+        .destaque-verde {
+            color: #A6CF2E;
+            font-weight: 600;
+        }
+
+        .destaque-laranja {
+            color: #EC7000;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Assinatura com efeito de marca d'água no canto superior DIREITO-->
+<div class="watermark">
+    <p><strong>Autor:</strong> Igor Stramandinoli Moita Pontes</p>
+    <p><strong>E-mail:</strong> igor.pontes@itau-unibanco.com.br</p>
+</div>
+
+<style>
+.watermark {
+    position: fixed;
+    top: 20px; /* trocado de bottom para top */
+    right: 20px; /* trocado de right para left */
+    background-color: rgba(19, 49, 52, 0.3); /* fundo com transparência */
+    border: 1px solid rgba(166, 207, 46, 0.4); /* borda verde translúcida */
+    border-radius: 10px;
+    padding: 14px 18px;
+    color: rgba(255, 255, 255, 0.6); /* texto branco translúcido */
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 13px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    pointer-events: none;
+    user-select: none;
+    max-width: 300px;
+    opacity: 0.7; /* transparência geral do bloco */
+}
+
+.watermark p {
+    margin: 4px 0;
+}
+
+.watermark strong {
+    color: rgba(166, 207, 46, 0.7); /* destaque verde translúcido */
+}
+</style>
+
+
+
+
+    <div class="container">
+        <div class="header">
+            <h1>Pagamento de Cupons em Crédito Privado</h1>
+            <p>Entendendo TIR, Rentabilidade e Remuneração na Prática</p>
+        </div>
+
+        <!-- Introdução -->
+        <section class="section">
+            <h2>Por que entender cupons é fundamental?</h2>
+            
+            <p>O pagamento de cupons é um dos principais diferenciais dos ativos de crédito privado. Diferente de um CDB ou Tesouro Direto, onde o investidor recebe tudo no vencimento, <strong>os cupons proporcionam fluxo de caixa periódico</strong> ao cliente.</p>
+
+            <div class="highlight-box">
+                <h4>O que vamos aprender:</h4>
+                <ul>
+                    <li>Como funciona o cálculo e pagamento de cupons</li>
+                    <li>A diferença entre comprar na emissão vs. mercado secundário</li>
+                    <li>Por que a TIR pode ser maior que a taxa de emissão</li>
+                    <li>Como transformar esse conhecimento em argumentos de venda</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Conceitos Fundamentais -->
+        <section class="section">
+            <h2>1. Conceitos Fundamentais</h2>
+
+            <div class="conceito-box">
+                <h4>📊 VNA (Valor Nominal Atualizado)</h4>
+                <p>É o valor de face do título corrigido pela inflação ou indexador. Representa quanto o título "vale" considerando a correção monetária desde a emissão.</p>
+            </div>
+
+            <div class="conceito-box">
+                <h4>💰 Cupom</h4>
+                <p>Pagamento periódico de juros ao investidor. É calculado sobre o VNA, não sobre o valor investido. Por isso, quem compra com desconto tem uma rentabilidade maior!</p>
+            </div>
+
+            <div class="conceito-box">
+                <h4>📈 Taxa de Emissão</h4>
+                <p>É a taxa definida quando o título foi criado. No nosso exemplo: <span class="destaque-verde">7,75% a.a.</span> Esta taxa incide sobre o VNA para calcular os cupons.</p>
+            </div>
+
+            <div class="conceito-box">
+                <h4>🎯 TIR (Taxa Interna de Retorno)</h4>
+                <p>É a rentabilidade REAL do investidor, considerando o preço que ele pagou. Se comprou com desconto, a TIR será maior que a taxa de emissão!</p>
+            </div>
+        </section>
+
+        <!-- O Caso Prático -->
+        <section class="section">
+            <h2>2. Caso Prático: Comparando Dois Clientes</h2>
+
+            <p>Vamos analisar um CRI/CRA com as seguintes características:</p>
+            <ul>
+                <li>Taxa de Emissão: <span class="destaque-verde">7,75% a.a.</span></li>
+                <li>Indexador: IPCA+</li>
+                <li>Pagamento de cupons: Semestral</li>
+                <li>Valor investido: R$ 100.000,00</li>
+            </ul>
+
+            <div class="comparison-grid">
+                <div class="client-card">
+                    <span class="client-label">CLIENTE A - Oferta Pública</span>
+                    <h4 style="margin-bottom: 20px;">Comprou na Emissão</h4>
+                    
+                    <div class="metric-box">
+                        <div class="metric-value">R$ 100.000</div>
+                        <div class="metric-label">Valor Investido</div>
+                    </div>
+                    
+                    <div class="metric-box">
+                        <div class="metric-value">7,75%</div>
+                        <div class="metric-label">Taxa de Compra (TIR)</div>
+                    </div>
+                    
+                    <div class="metric-box">
+                        <div class="metric-value">1.000</div>
+                        <div class="metric-label">PU de Compra</div>
+                    </div>
+                </div>
+
+                <div class="client-card destaque">
+                    <span class="client-label">CLIENTE B - Mercado Secundário</span>
+                    <h4 style="margin-bottom: 20px;">Comprou com Desconto</h4>
+                    
+                    <div class="metric-box">
+                        <div class="metric-value">R$ 100.000</div>
+                        <div class="metric-label">Valor Investido</div>
+                    </div>
+                    
+                    <div class="metric-box">
+                        <div class="metric-value destaque-laranja">9,00%</div>
+                        <div class="metric-label">Taxa de Compra (TIR)</div>
+                    </div>
+                    
+                    <div class="metric-box">
+                        <div class="metric-value">938,96</div>
+                        <div class="metric-label">PU de Compra</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert-box">
+                <h4>🔍 Perceba a Diferença Crucial:</h4>
+                <p>O Cliente B pagou <strong>R$ 938,96 por papel</strong> enquanto o valor na curva era R$ 1.011,17. Esse desconto de aproximadamente 7% faz com que sua TIR seja de <span class="destaque-laranja">9% a.a.</span> ao invés dos 7,75% a.a. da emissão!</p>
+            </div>
+        </section>
+
+        <!-- Como Funciona o Cálculo -->
+        <section class="section">
+            <h2>3. A Matemática dos Cupons</h2>
+
+            <div class="formula-box">
+                <strong>Valor Futuro = VNA × (1 + Taxa de Emissão)<sup>dias úteis/252</sup></strong>
+                <br><small style="color: rgba(255,255,255,0.8);">Cupom = Valor Futuro - VNA</small>
+            </div>
+
+            <div class="conceito-box" style="margin: 20px 0;">
+                <h4>📌 Sobre o Cálculo:</h4>
+                <p>• <strong>DU</strong> = Dias úteis entre pagamentos (aproximadamente 126 dias para semestral)</p>
+                <p>• <strong>252</strong> = Dias úteis padrão no ano para cálculos financeiros</p>
+                <p>• <strong>Taxa de Emissão</strong> = 7,75% a.a. (taxa anual definida na emissão)</p>
+            </div>
+
+            <h3>Passo a Passo do Cálculo:</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Etapa</th>
+                        <th>Descrição</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>VNA atual do papel</td>
+                        <td>R$ 1.274,82</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Cálculo do valor futuro</td>
+                        <td>VNA × (1 + 7,75%)<sup>(DU/252)</sup> <strong>≅</strong> R$ 1.324,31</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Cálculo do cupom por papel</td>
+                        <td>R$ 1.324,31 - R$ 1.274,82 = R$ 49,49</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Cupom total (100 papéis)</td>
+                        <td>R$ 4.949,00</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="highlight-box">
+                <h4>⚡ Insight Importante:</h4>
+                <p>Ambos os clientes recebem <strong>exatamente o mesmo valor de cupom</strong> (R$ 49,49 por papel), pois o cupom é calculado sobre o VNA, não sobre o valor investido! Mas como o Cliente B pagou menos pelos papéis, sua TIR é maior.</p>
+            </div>
+        </section>
+
+        <!-- A Grande Sacada -->
+        <section class="section">
+            <h2>4. A Grande Sacada: Por que a TIR é Maior?</h2>
+
+            <div class="comparison-grid">
+                <div class="client-card">
+                    <span class="client-label">CLIENTE A</span>
+                    <ul>
+                        <li>Investiu: R$ 100.000</li>
+                        <li>Recebe cupom: R$ 4.949</li>
+                        <li>Yield semestral: <strong>4,95%</strong></li>
+                        <li>Yield anual: <strong>10,17%</strong></li>
+                        <li>TIR Total: <strong>7,75% a.a.</strong></li>
+                    </ul>
+                </div>
+
+                <div class="client-card destaque">
+                    <span class="client-label">CLIENTE B</span>
+                    <ul>
+                        <li>Investiu: R$ 93.896</li>
+                        <li>Recebe cupom: R$ 4.949</li>
+                        <li>Yield semestral: <strong>5,27%</strong></li>
+                        <li>Yield anual: <strong>10,84%</strong></li>
+                        <li>TIR Total: <strong>9,00% a.a.</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="conceito-box" style="background: rgba(236, 112, 0, 0.1); border-color: #EC7000;">
+                <h4>🎯 O Poder do Desconto</h4>
+                <p>O Cliente B tem uma TIR de <span class="destaque-laranja">9% a.a.</span> porque:</p>
+                <ol>
+                    <li>Recebe os mesmos cupons que o Cliente A</li>
+                    <li>Mas investiu 6,1% menos (R$ 93.896 vs R$ 100.000)</li>
+                    <li>No vencimento, receberá o VNA integral, capturando o desconto</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Linha do Tempo dos Pagamentos -->
+        <section class="section">
+            <h2>5. Fluxo de Pagamentos ao Longo do Tempo</h2>
+
+            <div class="timeline">
+                <div class="timeline-line"></div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <h4>Momento da Compra</h4>
+                    <p>Cliente A: -R$ 100.000<br>
+                    Cliente B: -R$ 93.896</p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <h4>1º Cupom (6 meses)</h4>
+                    <p>Ambos recebem: +R$ 4.949<br>
+                    <small>Yield A: 4,95% | Yield B: 5,27%</small></p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <h4>2º Cupom (12 meses)</h4>
+                    <p>Ambos recebem: +R$ 5.032<br>
+                    <small>(VNA maior = cupom maior)</small></p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <h4>Vencimento</h4>
+                    <p>Ambos recebem: VNA final<br>
+                    <span class="destaque-laranja">Cliente B captura o desconto!</span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Argumentos Comerciais -->
+        <section class="section">
+            <h2>6. Transformando em Argumentos Comerciais</h2>
+
+            <div class="comercial-tip">
+                <h4>Para o Cliente Conservador:</h4>
+                <p>"Veja, este CRI paga cupons semestrais de IPCA + 7,75% a.a. Isso significa que a cada 6 meses você recebe aproximadamente 3,8% do valor atualizado do seu investimento. É como ter um 'salário' do seu investimento, com proteção contra inflação!"</p>
+            </div>
+
+            <div class="comercial-tip">
+                <h4>Para o Cliente Sofisticado:</h4>
+                <p>"Encontramos uma oportunidade no secundário: este papel está sendo negociado com desconto, oferecendo TIR de 9% a.a. ao invés dos 7,75% da emissão. Você receberá os mesmos cupons de quem comprou na oferta, mas com rentabilidade 16% maior devido ao desconto na entrada."</p>
+            </div>
+
+            <div class="comercial-tip">
+                <h4>Comparando com Outras Aplicações:</h4>
+                <p>"Enquanto um CDB paga tudo no vencimento, este CRI distribui rendimentos semestrais. Para um investimento de R$ 100 mil, são cerca de R$ 4.900 a cada 6 meses. Ideal para quem busca renda recorrente com isenção de IR!"</p>
+            </div>
+
+            <h3>Principais Vantagens para Destacar:</h3>
+
+            <div class="comparison-grid">
+                <div class="conceito-box">
+                    <h4>💸 Fluxo de Caixa</h4>
+                    <p>Recebimento periódico permite reinvestimento ou uso para despesas</p>
+                </div>
+
+                <div class="conceito-box">
+                    <h4>🛡️ Proteção Inflacionária</h4>
+                    <p>Cupons calculados sobre VNA atualizado mantém poder de compra</p>
+                </div>
+
+                <div class="conceito-box">
+                    <h4>📊 Oportunidades no Secundário</h4>
+                    <p>Descontos no mercado podem aumentar significativamente a TIR</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Venda Antecipada -->
+        <section class="section">
+            <h2>7. E se Vendermos Antecipadamente o Nosso Ativo?</h2>
+            
+            <div class="alert-box" style="background: rgba(236, 112, 0, 0.15);">
+                <h4>🎯 A Dúvida Mais Comum dos Clientes:</h4>
+                <p style="font-size: 1.1em;">"Se eu vender antes do próximo cupom, vou perder esse pagamento?"</p>
+                <p style="margin-top: 15px;"><strong style="color: #A6CF2E; font-size: 1.2em;">RESPOSTA: NÃO! Você não perde nada!</strong></p>
+            </div>
+
+            <h3>Como Funciona a Venda Antecipada?</h3>
+            
+            <p>Quando você vende um ativo de crédito privado antes do vencimento, o <strong>PU (Preço Unitário) já incorpora todos os cupons futuros trazidos a valor presente</strong>. É como se você recebesse antecipadamente, de forma proporcional, todos os pagamentos que ainda viriam.</p>
+
+            <div class="formula-box">
+                <strong>PU = Σ (Fluxos Futuros) / (1 + Taxa)<sup>dias úteis/252</sup></strong>
+                <br><small style="color: rgba(255,255,255,0.8);">O PU é a soma de todos os cupons e principal futuros descontados a valor presente</small>
+            </div>
+
+            <div class="conceito-box" style="background: rgba(166, 207, 46, 0.05); margin: 20px 0;">
+                <h4>📐 Fórmula do Valor Presente:</h4>
+                <p style="text-align: center; font-size: 1.1em;">
+                    <strong>VP = VF / (1 + Taxa de Venda)<sup>(DU Restante/252)</sup></strong>
+                </p>
+                <p style="margin-top: 10px; font-size: 0.9em;">Onde: VF = Valor Futuro do cupom | DU = Dias úteis até o pagamento | Taxa = Taxa de mercado atual</p>
+            </div>
+
+            <h3>Exemplo Prático: Decomposição do PU</h3>
+            
+            <p>Vamos analisar um CRI/CRA sendo vendido hoje por <span class="destaque-verde">PU = R$ 1.104,87</span>:</p>
+
+            <div class="highlight-box" style="margin-bottom: 20px;">
+                <h4>🔍 Exemplo de Cálculo - Próximo Cupom:</h4>
+                <p>Cupom de R$ 23,92 a ser pago em 87 dias úteis:</p>
+                <p style="text-align: center; margin: 10px 0;">
+                    <strong>VP = 23,92 / (1 + 7%)<sup>(87/252)</sup> = R$ 23,37</strong>
+                </p>
+                <p style="font-size: 0.9em;">O cupom de R$ 23,92 "vale" R$ 23,37 hoje. A diferença de R$ 0,55 é o desconto pelo tempo.</p>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Tipo</th>
+                        <th>Valor Futuro</th>
+                        <th>Dias Úteis</th>
+                        <th>Valor Presente</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>15/07/2022</td>
+                        <td>Cupom</td>
+                        <td>R$ 23,92</td>
+                        <td>87</td>
+                        <td class="destaque-verde">R$ 23,37</td>
+                    </tr>
+                    <tr>
+                        <td>15/01/2023</td>
+                        <td>Cupom</td>
+                        <td>R$ 24,51</td>
+                        <td>214</td>
+                        <td class="destaque-verde">R$ 23,16</td>
+                    </tr>
+                    <tr>
+                        <td>15/07/2023</td>
+                        <td>Cupom</td>
+                        <td>R$ 23,92</td>
+                        <td>336</td>
+                        <td class="destaque-verde">R$ 21,85</td>
+                    </tr>
+                    <tr>
+                        <td>15/01/2024</td>
+                        <td>Cupom</td>
+                        <td>R$ 23,92</td>
+                        <td>462</td>
+                        <td class="destaque-verde">R$ 21,13</td>
+                    </tr>
+                    <tr>
+                        <td>15/07/2024</td>
+                        <td>Cupom</td>
+                        <td>R$ 24,12</td>
+                        <td>587</td>
+                        <td class="destaque-verde">R$ 20,80</td>
+                    </tr>
+                    <tr>
+                        <td>15/01/2025</td>
+                        <td>Cupom</td>
+                        <td>R$ 24,70</td>
+                        <td>713</td>
+                        <td class="destaque-verde">R$ 20,38</td>
+                    </tr>
+                    <tr>
+                        <td>15/07/2025</td>
+                        <td>Cupom</td>
+                        <td>R$ 23,73</td>
+                        <td>838</td>
+                        <td class="destaque-verde">R$ 18,85</td>
+                    </tr>
+                    <tr>
+                        <td>15/01/2026</td>
+                        <td>Cupom</td>
+                        <td>R$ 24,90</td>
+                        <td>967</td>
+                        <td class="destaque-verde">R$ 19,20</td>
+                    </tr>
+                    <tr>
+                        <td>15/01/2026</td>
+                        <td>Principal</td>
+                        <td>R$ 1.213,79</td>
+                        <td>967</td>
+                        <td class="destaque-verde">R$ 936,25</td>
+                    </tr>
+                    <tr style="background: rgba(166, 207, 46, 0.1);">
+                        <td colspan="4"><strong>TOTAL (PU)</strong></td>
+                        <td><strong class="destaque-verde">R$ 1.104,87</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="highlight-box">
+                <h4>💡 O que isso significa na prática?</h4>
+                <p>Ao vender por R$ 1.104,87, você está recebendo:</p>
+                <ul>
+                    <li>R$ 168,62 referente aos 8 cupons futuros (a valor presente)</li>
+                    <li>R$ 936,25 referente ao principal no vencimento (a valor presente)</li>
+                </ul>
+                <p style="margin-top: 15px;"><strong>Você não "perde" nada - apenas recebe antecipadamente!</strong></p>
+            </div>
+
+            <h3>Cenários de Venda Antecipada</h3>
+
+            <div class="comparison-grid">
+                <div class="conceito-box">
+                    <h4>📅 Venda 1 Dia Antes do Cupom</h4>
+                    <p>O PU estará praticamente no valor "cheio", incluindo quase 100% do cupom que seria pago no dia seguinte. Você recebe o valor do cupom embutido no preço.</p>
+                </div>
+
+                <div class="conceito-box">
+                    <h4>📅 Venda no Meio do Período</h4>
+                    <p>O PU reflete proporcionalmente o tempo decorrido. Se passaram 3 meses desde o último cupom, aproximadamente 50% do próximo cupom está "acumulado" no PU.</p>
+                </div>
+
+                <div class="conceito-box">
+                    <h4>📅 Venda Logo Após Receber Cupom</h4>
+                    <p>O PU estará mais "limpo", mas ainda incorpora todos os cupons futuros descontados. É o momento de menor valor acumulado.</p>
+                </div>
+            </div>
+
+            <div class="comercial-tip">
+                <h4>Como Explicar para o Cliente:</h4>
+                <p>"Sr(a). Cliente, quando você vende um CRI/CRA, não está abrindo mão dos cupons futuros. O preço de venda (PU) já inclui esses valores descontados a valor presente. É como se você estivesse recebendo hoje, de forma antecipada e proporcional, todos os pagamentos que ainda viriam. Por isso o PU varia diariamente - ele vai 'acumulando' os juros dia a dia."</p>
+            </div>
+
+            <div class="comercial-tip">
+                <h4>Analogia Didática:</h4>
+                <p>"Imagine que você tem um apartamento alugado. Se decidir vender, o comprador pagará não só pelo imóvel, mas também considerará os aluguéis futuros que receberá. Com CRI/CRA é similar: o preço de venda já embute os 'aluguéis' (cupons) futuros."</p>
+            </div>
+
+            <h3>Visualização: Como o PU "Cresce" Entre Cupons</h3>
+            
+            <div style="background: #091B1E; border: 2px solid #A6CF2E; border-radius: 8px; padding: 30px; margin: 30px 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; position: relative;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.9em; color: rgba(255,255,255,0.7);">Último Cupom Pago</div>
+                        <div style="font-size: 1.2em; color: #A6CF2E; font-weight: 600;">R$ 1.080</div>
+                        <div style="font-size: 0.8em; color: rgba(255,255,255,0.6);">(PU "limpo")</div>
+                    </div>
+                    
+                    <div style="flex: 1; margin: 0 30px; position: relative;">
+                        <div style="height: 4px; background: linear-gradient(to right, #A6CF2E 0%, #EC7000 100%); border-radius: 2px;"></div>
+                        <div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); text-align: center;">
+                            <div style="font-size: 0.9em; color: #EC7000;">PU Hoje</div>
+                            <div style="font-size: 1.3em; font-weight: 700;">R$ 1.104,87</div>
+                        </div>
+                        <div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); font-size: 0.8em; color: rgba(255,255,255,0.7); text-align: center;">
+                            Cupom "acumulando"<br>dia a dia
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.9em; color: rgba(255,255,255,0.7);">Próximo Cupom</div>
+                        <div style="font-size: 1.2em; color: #A6CF2E; font-weight: 600;">R$ 1.130</div>
+                        <div style="font-size: 0.8em; color: rgba(255,255,255,0.6);">(PU "cheio")</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert-box" style="background: rgba(166, 207, 46, 0.1); border-color: #A6CF2E; text-align: center;">
+                <p style="font-size: 1.1em; margin: 0;"><strong>Resumo:</strong> O PU sobe gradualmente entre os pagamentos de cupons,<br>
+                refletindo os juros acumulados. Ao vender, você recebe tudo!</p>
+            </div>
+        </section>
+
+        <!-- Comparativos de Periodicidade -->
+        <section class="section">
+            <h2>8. Comparativos de Periodicidade: Qual a Melhor Opção?</h2>
+            
+            <p>Uma decisão crucial ao investir em crédito privado é escolher a <strong>periodicidade dos cupons</strong>. Vamos entender como isso impacta seu investimento:</p>
+
+            <div class="alert-box" style="background: rgba(166, 207, 46, 0.1); border-color: #A6CF2E;">
+                <h4>🎯 Cenário Base para Comparação:</h4>
+                <ul>
+                    <li>Investimento: R$ 100.000,00</li>
+                    <li>Prazo: 3 anos</li>
+                    <li>TIR: 12% a.a. para todas as modalidades</li>
+                    <li>Diferença: Frequência de pagamento dos cupons</li>
+                </ul>
+                <p style="margin-top: 15px; font-size: 0.9em;"><strong>Observação:</strong> As taxas nominais variam (Mensal: 11,39% | Trimestral: 11,49% | Semestral: 11,66% | Anual: 12,00%) para manter a mesma TIR.</p>
+            </div>
+
+            <h3>O Efeito "Dentes de Serra" no PU</h3>
+            
+            <div style="background: #091B1E; border: 2px solid #A6CF2E; border-radius: 8px; padding: 30px; margin: 30px 0;">
+                <h4 style="color: #EC7000; text-align: center; margin-bottom: 5px; font-size: 1.4em;">Evolução do PU por Periodicidade</h4>
+                
+                <!-- Gráfico Unificado Dentes de Serra -->
+                <div style="background: linear-gradient(to bottom, #0A2A3B 0%, #091B1E 100%); padding: 40px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                    <h5 style="color: #FFFFFF; text-align: center; margin-bottom: 30px; font-weight: 400;">Preço Unitário (PU) Curva - Efeito "Dentes de Serra"</h5>
+                    
+                    <div style="display: flex; justify-content: center; gap: 30px; margin-bottom: 35px;">
+                        <span style="color: #FFFFFF; font-size: 0.95em;"><span style="display: inline-block; width: 20px; height: 3px; background: #A6CF2E; vertical-align: middle; margin-right: 8px;"></span>Pagamento Mensal</span>
+                        <span style="color: #FFFFFF; font-size: 0.95em;"><span style="display: inline-block; width: 20px; height: 3px; background: #00B4D8; vertical-align: middle; margin-right: 8px;"></span>Pagamento Trimestral</span>
+                        <span style="color: #FFFFFF; font-size: 0.95em;"><span style="display: inline-block; width: 20px; height: 3px; background: #FFD60A; vertical-align: middle; margin-right: 8px;"></span>Pagamento Semestral</span>
+                        <span style="color: #FFFFFF; font-size: 0.95em;"><span style="display: inline-block; width: 20px; height: 3px; background: #B07C9E; vertical-align: middle; margin-right: 8px;"></span>Pagamento Anual</span>
+                    </div>
+                    
+                    <!-- Gráfico Principal Unificado -->
+                    <div style="position: relative; height: 350px; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 20px;">
+                        <!-- Eixo Y -->
+                        <div style="position: absolute; left: 0; top: 10px; bottom: 50px; width: 50px;">
+                            <div style="position: absolute; top: 0; left: 15px; color: #BBB; font-size: 0.9em;">110</div>
+                            <div style="position: absolute; top: 20%; left: 15px; color: #BBB; font-size: 0.9em;">108</div>
+                            <div style="position: absolute; top: 40%; left: 15px; color: #BBB; font-size: 0.9em;">106</div>
+                            <div style="position: absolute; top: 60%; left: 15px; color: #BBB; font-size: 0.9em;">104</div>
+                            <div style="position: absolute; top: 80%; left: 15px; color: #BBB; font-size: 0.9em;">102</div>
+                            <div style="position: absolute; bottom: 0; left: 15px; color: #BBB; font-size: 0.9em;">100</div>
+                        </div>
+                        
+                        <!-- Grid de fundo -->
+                        <div style="position: absolute; left: 50px; right: 10px; top: 10px; bottom: 50px;">
+                            <!-- Linhas horizontais -->
+                            <div style="position: absolute; top: 0; left: 0; right: 0; border-top: 1px solid rgba(255,255,255,0.2);"></div>
+                            <div style="position: absolute; top: 20%; left: 0; right: 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>
+                            <div style="position: absolute; top: 40%; left: 0; right: 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>
+                            <div style="position: absolute; top: 60%; left: 0; right: 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>
+                            <div style="position: absolute; top: 80%; left: 0; right: 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>
+                            <div style="position: absolute; bottom: 0; left: 0; right: 0; border-top: 1px solid rgba(255,255,255,0.2);"></div>
+                        </div>
+                        
+                        <!-- Área do gráfico com todas as periodicidades -->
+                        <div style="position: absolute; left: 50px; right: 10px; top: 10px; bottom: 50px;">
+                            <svg width="100%" height="100%" viewBox="0 0 720 280" preserveAspectRatio="none">
+                                <!-- Pagamento Anual - 3 grandes dentes -->
+                                <path d="M 0,280 L 0,280 C 120,280 120,280 240,0 L 240,280 C 360,280 360,280 480,0 L 480,280 C 600,280 600,280 720,0" 
+                                      fill="none" stroke="#B07C9E" stroke-width="3" opacity="0.8"/>
+                                
+                                <!-- Pagamento Semestral - 6 dentes médios -->
+                                <path d="M 0,280 L 0,280 C 60,280 60,280 120,84 L 120,280 C 180,280 180,280 240,84 L 240,280 C 300,280 300,280 360,84 L 360,280 C 420,280 420,280 480,84 L 480,280 C 540,280 540,280 600,84 L 600,280 C 660,280 660,280 720,84" 
+                                      fill="none" stroke="#FFD60A" stroke-width="3" opacity="0.8"/>
+                                
+                                <!-- Pagamento Trimestral - 12 dentes -->
+                                <path d="M 0,280 L 0,280 C 30,280 30,280 60,168 L 60,280 C 90,280 90,280 120,168 L 120,280 C 150,280 150,280 180,168 L 180,280 C 210,280 210,280 240,168 L 240,280 C 270,280 270,280 300,168 L 300,280 C 330,280 330,280 360,168 L 360,280 C 390,280 390,280 420,168 L 420,280 C 450,280 450,280 480,168 L 480,280 C 510,280 510,280 540,168 L 540,280 C 570,280 570,280 600,168 L 600,280 C 630,280 630,280 660,168 L 660,280 C 690,280 690,280 720,168" 
+                                      fill="none" stroke="#00B4D8" stroke-width="3" opacity="0.8"/>
+                                
+                                <!-- Pagamento Mensal - 36 pequenos dentes -->
+                                <path d="M 0,280 L 0,280 C 10,280 10,280 20,252 L 20,280 C 30,280 30,280 40,252 L 40,280 C 50,280 50,280 60,252 L 60,280 C 70,280 70,280 80,252 L 80,280 C 90,280 90,280 100,252 L 100,280 C 110,280 110,280 120,252 L 120,280 C 130,280 130,280 140,252 L 140,280 C 150,280 150,280 160,252 L 160,280 C 170,280 170,280 180,252 L 180,280 C 190,280 190,280 200,252 L 200,280 C 210,280 210,280 220,252 L 220,280 C 230,280 230,280 240,252 L 240,280 C 250,280 250,280 260,252 L 260,280 C 270,280 270,280 280,252 L 280,280 C 290,280 290,280 300,252 L 300,280 C 310,280 310,280 320,252 L 320,280 C 330,280 330,280 340,252 L 340,280 C 350,280 350,280 360,252 L 360,280 C 370,280 370,280 380,252 L 380,280 C 390,280 390,280 400,252 L 400,280 C 410,280 410,280 420,252 L 420,280 C 430,280 430,280 440,252 L 440,280 C 450,280 450,280 460,252 L 460,280 C 470,280 470,280 480,252 L 480,280 C 490,280 490,280 500,252 L 500,280 C 510,280 510,280 520,252 L 520,280 C 530,280 530,280 540,252 L 540,280 C 550,280 550,280 560,252 L 560,280 C 570,280 570,280 580,252 L 580,280 C 590,280 590,280 600,252 L 600,280 C 610,280 610,280 620,252 L 620,280 C 630,280 630,280 640,252 L 640,280 C 650,280 650,280 660,252 L 660,280 C 670,280 670,280 680,252 L 680,280 C 690,280 690,280 700,252 L 700,280 C 710,280 710,280 720,252" 
+                                      fill="none" stroke="#A6CF2E" stroke-width="3" opacity="0.9"/>
+                            </svg>
+                        </div>
+                        
+                        <!-- Eixo X -->
+                        <div style="position: absolute; bottom: 10px; left: 50px; right: 10px; height: 40px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #BBB; font-size: 0.85em;">Início</span>
+                            <span style="color: #BBB; font-size: 0.85em;">Mês 6</span>
+                            <span style="color: #BBB; font-size: 0.85em;">Mês 12</span>
+                            <span style="color: #BBB; font-size: 0.85em;">Mês 18</span>
+                            <span style="color: #BBB; font-size: 0.85em;">Mês 24</span>
+                            <span style="color: #BBB; font-size: 0.85em;">Mês 30</span>
+                            <span style="color: #BBB; font-size: 0.85em;">Mês 36</span>
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 6px; margin-top: 25px; font-size: 0.95em; line-height: 1.7;">
+                        <p style="margin: 0; text-align: center;"><strong>O gráfico ilustra como o preço unitário (PU) de cada bond evolui ao longo do tempo, mostrando o efeito "dentes de serra" nos momentos de pagamento de cupons.</strong></p>
+                        <p style="margin: 10px 0 0 0;">Por que ocorre: Após o pagamento de cada cupom, o PU retorna a 100 (valor ao par). Entre os pagamentos, o PU aumenta devido ao acúmulo de juros. Todos os bonds convergem para 100 no vencimento.</p>
+                        <p style="margin: 10px 0 0 0;">Observe que: Bonds com pagamentos menos frequentes (ex: anual) apresentam "dentes" maiores, enquanto bonds com pagamentos mais frequentes (ex: mensal) apresentam "dentes" menores e mais numerosos.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Taxa Nominal vs. TIR: A Pegadinha</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Periodicidade</th>
+                        <th>Taxa Nominal</th>
+                        <th>TIR</th>
+                        <th>Nº de Cupons</th>
+                        <th>Valor por Cupom</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Mensal</strong></td>
+                        <td>11,39% a.a.</td>
+                        <td class="destaque-verde">12,00% a.a.</td>
+                        <td>36</td>
+                        <td>R$ 948,88</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Trimestral</strong></td>
+                        <td>11,49% a.a.</td>
+                        <td class="destaque-verde">12,00% a.a.</td>
+                        <td>12</td>
+                        <td>R$ 2.873,73</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Semestral</strong></td>
+                        <td>11,66% a.a.</td>
+                        <td class="destaque-verde">12,00% a.a.</td>
+                        <td>6</td>
+                        <td>R$ 5.830,05</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Anual</strong></td>
+                        <td>12,00% a.a.</td>
+                        <td class="destaque-verde">12,00% a.a.</td>
+                        <td>3</td>
+                        <td>R$ 12.000,00</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="conceito-box" style="background: rgba(236, 112, 0, 0.1); border-color: #EC7000; margin-top: 20px;">
+                <h4>⚠️ Atenção ao Detalhe Crucial:</h4>
+                <p>Para que todos os bonds tenham a mesma TIR de 12% a.a., suas <strong>taxas nominais precisam ser diferentes</strong>! Isso ocorre devido ao efeito dos juros compostos:</p>
+                <ul>
+                    <li><strong>Mensal:</strong> 11,39% a.a. (menor taxa nominal, mais reinvestimentos)</li>
+                    <li><strong>Anual:</strong> 12,00% a.a. (taxa nominal = TIR, sem reinvestimentos intermediários)</li>
+                </ul>
+                <p style="margin-top: 15px;"><strong>Na prática:</strong> A diferença na taxa nominal compensa o fato de que bonds com pagamentos mais frequentes permitem reinvestimento mais cedo.</p>
+            </div>
+
+            <h3>Análise do Risco de Reinvestimento</h3>
+
+            <div class="highlight-box" style="margin-bottom: 20px;">
+                <h4>📌 O Que É Risco de Reinvestimento?</h4>
+                <p>É o risco de ter que reinvestir os cupons recebidos a taxas diferentes (geralmente menores) do que a taxa original do investimento. Quanto mais cupons você recebe, mais vezes está exposto a esse risco.</p>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="conceito-box" style="border: 2px solid #A6CF2E;">
+                    <h4 style="color: #A6CF2E;">💚 Pagamento Mensal</h4>
+                    <div class="metric-box" style="margin: 15px 0;">
+                        <div class="metric-value">36</div>
+                        <div class="metric-label">cupons de R$ 948,88</div>
+                    </div>
+                    <p><strong>Risco:</strong> Muito Alto</p>
+                    <p><strong>Por quê?</strong> 36 momentos de reinvestimento</p>
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                        <p style="margin: 5px 0;"><span class="destaque-verde">✓ Benefício:</span> Se juros subirem, aproveita mais rápido</p>
+                        <p style="margin: 5px 0;"><span class="destaque-laranja">✗ Risco:</span> Se juros caírem, maior impacto negativo</p>
+                    </div>
+                </div>
+
+                <div class="conceito-box" style="border: 2px solid #00B4D8;">
+                    <h4 style="color: #00B4D8;">💙 Pagamento Trimestral</h4>
+                    <div class="metric-box" style="margin: 15px 0;">
+                        <div class="metric-value">12</div>
+                        <div class="metric-label">cupons de R$ 2.873,73</div>
+                    </div>
+                    <p><strong>Risco:</strong> Alto</p>
+                    <p><strong>Por quê?</strong> Equilíbrio entre frequência e valor</p>
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                        <p style="margin: 5px 0;"><span class="destaque-verde">✓ Benefício:</span> Exposição moderada a flutuações</p>
+                        <p style="margin: 5px 0;">Ideal para cenários incertos</p>
+                    </div>
+                </div>
+
+                <div class="conceito-box" style="border: 2px solid #FFD60A;">
+                    <h4 style="color: #FFD60A;">💛 Pagamento Semestral</h4>
+                    <div class="metric-box" style="margin: 15px 0;">
+                        <div class="metric-value">6</div>
+                        <div class="metric-label">cupons de R$ 5.830,05</div>
+                    </div>
+                    <p><strong>Risco:</strong> Moderado</p>
+                    <p><strong>Por quê?</strong> Apenas 6 momentos de reinvestimento</p>
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                        <p style="margin: 5px 0;"><span class="destaque-verde">✓ Benefício:</span> Menor risco em cenário de queda</p>
+                        <p style="margin: 5px 0;">Padrão mais comum no mercado</p>
+                    </div>
+                </div>
+
+                <div class="conceito-box" style="border: 2px solid #B07C9E;">
+                    <h6 style="color: #B07C9E;">💜 Pagamento Anual</h6>
+                    <div class="metric-box" style="margin: 15px 0;">
+                        <div class="metric-value">3</div>
+                        <div class="metric-label">cupons de R$ 12.000,00</div>
+                    </div>
+                    <p><strong>Risco:</strong> Baixo</p>
+                    <p><strong>Por quê?</strong> Mínima exposição a flutuações</p>
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                        <p style="margin: 5px 0;"><span class="destaque-verde">✓ Benefício:</span> Mínima exposição a flutuações</p>
+                        <p style="margin: 5px 0;"><span class="destaque-laranja">✗ Risco:</span> Resposta lenta a oportunidades</p>
+                    </div>
+                </div>
+            </div>
+            <div class="conceito-box" style="margin-top: 30px; background: rgba(166, 207, 46, 0.05);">
+                <h4>🔍 Nota Técnica sobre Reinvestimento:</h4>
+                <p>As taxas nominais ajustadas (11,39% para mensal vs. 12,00% para anual) compensam matematicamente o efeito do reinvestimento. <strong>Mas atenção:</strong></p>
+                <ul>
+                    <li>Isso assume reinvestimento à mesma taxa (12% a.a.)</li>
+                    <li>Na prática, você reinvestirá às taxas de mercado futuras</li>
+                    <li>Por isso o risco de reinvestimento é real e deve guiar sua escolha</li>
+                </ul>
+                <p style="margin-top: 15px;"><strong>A diferença principal:</strong> Permanece no risco de reinvestimento e na exposição a possíveis mudanças nas taxas de juros do mercado.</p>
+            </div>
+
+            <h3>Como Usar na Prática com Clientes</h3>
+
+            <div class="comercial-tip">
+                <h4>Para o Cliente que Busca Fluxo de Caixa:</h4>
+                <p>"Para suas necessidades mensais, recomendo bonds com pagamento mensal. Você receberá cerca de R$ 950 por mês para cada R$ 100 mil investidos. É como ter um 'salário' do seu investimento, ideal para complementar renda."</p>
+            </div>
+
+            <div class="comercial-tip">
+                <h4>Para o Cliente em Cenário de Alta de Juros:</h4>
+                <p>"Com expectativa de alta na Selic, bonds mensais são estratégicos. Você poderá reinvestir os cupons rapidamente nas novas taxas mais altas. É como surfar a onda de alta dos juros!"</p>
+            </div>
+
+            <div class="comercial-tip">
+                <h4>Para o Cliente Conservador em Cenário de Queda:</h4>
+                <p>"Neste momento de juros em queda, recomendo bonds semestrais ou anuais. Você 'trava' a taxa atual por mais tempo e sofre menos com reinvestimentos em taxas menores. É uma proteção natural."</p>
+            </div>
+
+            <div class="alert-box">
+                <h4>🎯 Regra de Ouro para Escolher Periodicidade:</h4>
+                <table style="background: transparent; margin: 0;">
+                    <tr>
+                        <td style="padding: 10px; border: none;"><strong>Juros Subindo →</strong></td>
+                        <td style="padding: 10px; border: none;">Prefira cupons mais frequentes (mensal/trimestral)</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: none;"><strong>Juros Caindo →</strong></td>
+                        <td style="padding: 10px; border: none;">Prefira cupons menos frequentes (semestral/anual)</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: none;"><strong>Incerteza →</strong></td>
+                        <td style="padding: 10px; border: none;">Fique no meio termo (trimestral/semestral)</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: none;"><strong>Necessidade de Renda →</strong></td>
+                        <td style="padding: 10px; border: none;">Escolha pela sua necessidade de fluxo</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 30px;">
+                <h4>💎 Insight Valioso para Seus Clientes:</h4>
+                <p>A periodicidade não é apenas uma questão técnica - é uma <strong>decisão estratégica</strong> que pode aumentar ou proteger a rentabilidade. Use este conhecimento para se diferenciar:</p>
+                <ul>
+                    <li>Mostre que você entende além do básico</li>
+                    <li>Personalize a recomendação para cada momento de mercado</li>
+                    <li>Demonstre como a escolha certa pode gerar valor adicional</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Perguntas Frequentes -->
+        <section class="section">
+            <h2>9. Perguntas que Seus Clientes Farão</h2>
+
+            <div class="conceito-box">
+                <h4>❓ "Por que o papel está com desconto no secundário?"</h4>
+                <p><strong>Resposta:</strong> "Diversos fatores podem gerar oportunidades: necessidade de liquidez do vendedor, mudanças nas taxas de juros, ou simplesmente momentos de menor demanda. O importante é que o emissor continua sólido e os pagamentos garantidos."</p>
+            </div>
+
+            <div class="conceito-box">
+                <h4>❓ "O cupom pode variar?"</h4>
+                <p><strong>Resposta:</strong> "O percentual é fixo (7,75% a.a.), mas o valor em reais aumenta porque é calculado sobre o VNA corrigido pela inflação. É uma proteção adicional do seu investimento."</p>
+            </div>
+
+            <div class="conceito-box">
+                <h4>❓ "E se eu precisar vender antes do vencimento?"</h4>
+                <p><strong>Resposta:</strong> "Você pode vender no mercado secundário. O preço dependerá das condições de mercado, podendo gerar ganho ou perda. Mas os cupons recebidos até então já são seus, reduzindo o risco total."</p>
+            </div>
+
+            <div class="conceito-box">
+                <h4>❓ "Vou perder o próximo cupom se vender agora?"</h4>
+                <p><strong>Resposta:</strong> "Não! O PU de venda já inclui proporcionalmente todos os cupons futuros. Se faltam 30 dias para o próximo cupom e você já 'acumulou' 150 dias, cerca de 83% desse cupom está embutido no preço que você receberá."</p>
+            </div>
+
+            <div class="conceito-box">
+                <h4>❓ "Qual o melhor momento para vender?"</h4>
+                <p><strong>Resposta:</strong> "Não existe um momento 'melhor' em termos de cupons - eles sempre estarão proporcionalmente no preço. O que impacta mais é a taxa de mercado: se os juros caíram desde sua compra, você terá ganho de capital além dos cupons acumulados."</p>
+            </div>
+
+            <div class="conceito-box">
+                <h4>❓ "Por que bonds mensais têm taxa nominal menor?"</h4>
+                <p><strong>Resposta:</strong> "É o efeito dos juros compostos! Como você recebe e pode reinvestir 36 vezes, precisa de uma taxa nominal menor (11,39%) para chegar à mesma TIR de 12% a.a. É matemática financeira pura - quanto mais reinvestimentos, maior o efeito multiplicador."</p>
+            </div>
+
+            <div class="conceito-box">
+                <h4>❓ "Qual periodicidade escolher se não sei o que vai acontecer com os juros?"</h4>
+                <p><strong>Resposta:</strong> "Para cenários incertos, trimestral ou semestral são escolhas equilibradas. Você não maximiza ganhos se os juros subirem muito, mas também não perde tanto se caírem. É a escolha prudente para quem prefere dormir tranquilo."</p>
+            </div>
+        </section>
+
+        <!-- Resumo e Próximos Passos -->
+        <section class="section">
+            <h2>10. Resumo: Os 7 Pontos-Chave</h2>
+
+            <div class="alert-box" style="background: rgba(166, 207, 46, 0.1); border-color: #A6CF2E;">
+                <h4>✅ Para Fixar e Usar com Clientes:</h4>
+                <ol>
+                    <li><strong>Cupons = Renda Recorrente:</strong> Diferencial vs. CDB/Tesouro que pagam só no vencimento</li>
+                    <li><strong>Proteção Inflacionária Dupla:</strong> Taxa fixa + correção do VNA</li>
+                    <li><strong>TIR > Taxa de Emissão:</strong> Oportunidades de desconto no secundário</li>
+                    <li><strong>Isenção de IR:</strong> CRI/CRA para pessoa física (argumento forte!)</li>
+                    <li><strong>Flexibilidade:</strong> Cupons podem ser reinvestidos ou usados</li>
+                    <li><strong>Liquidez sem Perda:</strong> Na venda antecipada, cupons futuros estão embutidos no PU</li>
+                    <li><strong>Periodicidade Estratégica:</strong> Escolha conforme cenário de juros e necessidade de fluxo</li>
+                </ol>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 40px;">
+                <h4>🎯 Sua Missão:</h4>
+                <p>Identifique no book de ofertas papéis sendo negociados com desconto. Calcule a TIR real e apresente como oportunidade para seus clientes mais sofisticados. Para os conservadores, foque no fluxo de caixa previsível e na proteção inflacionária.</p>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
